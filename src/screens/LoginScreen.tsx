@@ -23,6 +23,7 @@ export function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  const nameRef = useRef<RNTextInput>(null);
   const emailRef = useRef<RNTextInput>(null);
   const passwordRef = useRef<RNTextInput>(null);
 
@@ -43,6 +44,9 @@ export function LoginScreen() {
       });
       if (Object.keys(validationErrors).length > 0) {
         setErrors(validationErrors);
+        if (validationErrors.name) nameRef.current?.focus();
+        else if (validationErrors.email) emailRef.current?.focus();
+        else if (validationErrors.password) passwordRef.current?.focus();
         return;
       }
     }
@@ -112,6 +116,7 @@ export function LoginScreen() {
 
         {isSignUp && (
           <TextInput
+            ref={nameRef}
             placeholder="이름"
             value={name}
             onChangeText={(v) => {
