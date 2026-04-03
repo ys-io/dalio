@@ -3,7 +3,7 @@ import { TextInput as RNTextInput } from "react-native";
 import { useAuth } from "../providers/AuthProvider";
 import { signInWithGoogle } from "../lib/social-auth";
 import { signUpSchema } from "../lib/validations";
-import { apiCall, validate } from "../utils";
+import { apiCall, validate } from "@ys-io/utils";
 import { supabase } from "../lib/supabase";
 import {
   Button,
@@ -12,7 +12,7 @@ import {
   Screen,
   Body,
   Divider,
-} from "../components/ui";
+} from "@ys-io/ui";
 
 export function LoginScreen() {
   const { signInWithEmail, signUpWithEmail } = useAuth();

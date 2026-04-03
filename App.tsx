@@ -2,7 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import { AuthProvider, useAuth } from "./src/providers/AuthProvider";
 import { LoginScreen } from "./src/screens/LoginScreen";
 import { HomeScreen } from "./src/screens/HomeScreen";
-import { LoadingScreen } from "./src/components/ui";
+import { LoadingScreen } from "@ys-io/ui";
 
 function Router() {
   const { isLoading, isAuthenticated } = useAuth();
