@@ -18,6 +18,7 @@ const darkTheme = {
     border: "#2c2c2e",
     borderLight: "#1c1c1e",
     placeholder: "#636366",
+    focus: "#6366f1",
   },
 };
 
