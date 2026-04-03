@@ -4,6 +4,7 @@ import { useAuth } from "../providers/AuthProvider";
 import { signInWithGoogle } from "../lib/social-auth";
 import { signUpSchema } from "../lib/validations";
 import { apiCall, validate } from "../lib/api";
+import { supabase } from "../lib/supabase";
 import {
   Button,
   TextInput,
@@ -46,8 +47,20 @@ export function LoginScreen() {
       }
     }
 
+    if (!email) {
+      setErrors({ email: "이메일을 입력해주세요." });
+      emailRef.current?.focus();
+      return;
+    }
+    if (!isSignUp && !password) {
+      setErrors({ password: "비밀번호를 입력해주세요." });
+      passwordRef.current?.focus();
+      return;
+    }
+
     setErrors({});
     setLoading(true);
+
     if (isSignUp) {
       const { error } = await apiCall(() =>
         signUpWithEmail(email, password, name),
@@ -57,28 +70,18 @@ export function LoginScreen() {
         emailRef.current?.focus();
       }
     } else {
-      const { error, raw } = await apiCall(() =>
-        signInWithEmail(email, password),
-      );
+      const { error } = await apiCall(() => signInWithEmail(email, password));
       if (error) {
-        const isUserNotFound =
-          raw === "Invalid login credentials" ||
-          raw === "User not found" ||
-          raw === "invalid_credentials";
-        const isInvalidPassword =
-          raw === "Invalid login credentials" && password.length > 0;
+        // 계정 존재 여부 체크
+        const { data: exists } = await supabase.rpc("check_email_exists", {
+          target_email: email,
+        });
 
-        // Supabase는 보안상 "Invalid login credentials"로 통일하므로
-        // email이 비어있으면 이메일 에러, 아니면 비밀번호 에러로 처리
-        if (!email) {
-          setErrors({ email: "이메일을 입력해주세요." });
+        if (!exists) {
+          setErrors({ email: "존재하지 않는 계정입니다." });
           emailRef.current?.focus();
-        } else if (!password) {
-          setErrors({ password: "비밀번호를 입력해주세요." });
-          passwordRef.current?.focus();
         } else {
-          // 둘 다 입력된 상태에서 실패 → 비밀번호 에러로 표시
-          setErrors({ password: "이메일 또는 비밀번호가 일치하지 않습니다." });
+          setErrors({ password: "비밀번호가 일치하지 않습니다." });
           passwordRef.current?.focus();
         }
       }
