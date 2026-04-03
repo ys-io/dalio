@@ -6,7 +6,8 @@ import {
   Button,
   TextInput,
   Text,
-  ScreenContainer,
+  Screen,
+  Body,
   Divider,
 } from "../components/ui";
 
@@ -56,65 +57,67 @@ export function LoginScreen() {
   };
 
   return (
-    <ScreenContainer centered>
-      <Text variant="title" align="center" style={{ marginBottom: 4 }}>
-        Dalio
-      </Text>
-      <Text variant="subtitle" align="center" style={{ marginBottom: 32 }}>
-        캘린더 & 일정 관리
-      </Text>
+    <Screen>
+      <Body centered>
+        <Text variant="title" align="center" style={{ marginBottom: 4 }}>
+          Dalio
+        </Text>
+        <Text variant="subtitle" align="center" style={{ marginBottom: 32 }}>
+          캘린더 & 일정 관리
+        </Text>
 
-      {isSignUp && (
+        {isSignUp && (
+          <TextInput
+            placeholder="이름"
+            value={name}
+            onChangeText={setName}
+            containerStyle={{ marginBottom: 12 }}
+          />
+        )}
+
         <TextInput
-          placeholder="이름"
-          value={name}
-          onChangeText={setName}
+          placeholder="이메일"
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+          keyboardType="email-address"
           containerStyle={{ marginBottom: 12 }}
         />
-      )}
+        <TextInput
+          placeholder="비밀번호"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          containerStyle={{ marginBottom: 12 }}
+        />
 
-      <TextInput
-        placeholder="이메일"
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        keyboardType="email-address"
-        containerStyle={{ marginBottom: 12 }}
-      />
-      <TextInput
-        placeholder="비밀번호"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        containerStyle={{ marginBottom: 12 }}
-      />
+        <Button
+          title={isSignUp ? "회원가입" : "로그인"}
+          onPress={handleSubmit}
+          disabled={loading}
+          loading={loading}
+          style={{ marginBottom: 12 }}
+        />
 
-      <Button
-        title={isSignUp ? "회원가입" : "로그인"}
-        onPress={handleSubmit}
-        disabled={loading}
-        loading={loading}
-        style={{ marginBottom: 12 }}
-      />
+        <Button
+          title={
+            isSignUp
+              ? "이미 계정이 있나요? 로그인"
+              : "계정이 없나요? 회원가입"
+          }
+          onPress={() => setIsSignUp(!isSignUp)}
+          variant="ghost"
+        />
 
-      <Button
-        title={
-          isSignUp
-            ? "이미 계정이 있나요? 로그인"
-            : "계정이 없나요? 회원가입"
-        }
-        onPress={() => setIsSignUp(!isSignUp)}
-        variant="ghost"
-      />
+        <Divider label="또는" />
 
-      <Divider label="또는" />
-
-      <Button
-        title="Google로 계속하기"
-        onPress={handleGoogleLogin}
-        disabled={loading}
-        style={{ backgroundColor: "#4285F4" }}
-      />
-    </ScreenContainer>
+        <Button
+          title="Google로 계속하기"
+          onPress={handleGoogleLogin}
+          disabled={loading}
+          style={{ backgroundColor: "#4285F4" }}
+        />
+      </Body>
+    </Screen>
   );
 }
