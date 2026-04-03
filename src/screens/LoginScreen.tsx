@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { TextInput as RNTextInput } from "react-native";
 import { useAuth } from "../providers/AuthProvider";
 import { signInWithGoogle } from "../lib/social-auth";
 import { loginSchema, signUpSchema } from "../lib/validations";
@@ -20,6 +21,8 @@ export function LoginScreen() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const emailRef = useRef<RNTextInput>(null);
+  const passwordRef = useRef<RNTextInput>(null);
 
   const handleSubmit = async () => {
     const schema = isSignUp ? signUpSchema : loginSchema;
@@ -68,12 +71,15 @@ export function LoginScreen() {
               setName(v);
               setErrors((prev) => ({ ...prev, name: "" }));
             }}
+            returnKeyType="next"
+            onSubmitEditing={() => emailRef.current?.focus()}
             error={errors.name}
             containerStyle={{ marginBottom: 12 }}
           />
         )}
 
         <TextInput
+          ref={emailRef}
           placeholder="이메일"
           value={email}
           onChangeText={(v) => {
@@ -82,10 +88,13 @@ export function LoginScreen() {
           }}
           autoCapitalize="none"
           keyboardType="email-address"
+          returnKeyType="next"
+          onSubmitEditing={() => passwordRef.current?.focus()}
           error={errors.email}
           containerStyle={{ marginBottom: 12 }}
         />
         <TextInput
+          ref={passwordRef}
           placeholder="비밀번호"
           value={password}
           onChangeText={(v) => {
@@ -93,6 +102,8 @@ export function LoginScreen() {
             setErrors((prev) => ({ ...prev, password: "" }));
           }}
           secureTextEntry
+          returnKeyType="done"
+          onSubmitEditing={handleSubmit}
           error={errors.password}
           containerStyle={{ marginBottom: 12 }}
         />
