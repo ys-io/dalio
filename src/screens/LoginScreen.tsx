@@ -8,6 +8,11 @@ import {
   View,
 } from "react-native";
 import { useAuth } from "../providers/AuthProvider";
+import {
+  signInWithGoogle,
+  signInWithKakao,
+  signInWithNaver,
+} from "../lib/social-auth";
 
 export function LoginScreen() {
   const { signInWithEmail, signUpWithEmail } = useAuth();
@@ -30,6 +35,21 @@ export function LoginScreen() {
       } else {
         await signInWithEmail(email, password);
       }
+    } catch (error: any) {
+      Alert.alert("오류", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSocialLogin = async (
+    provider: "google" | "kakao" | "naver",
+  ) => {
+    setLoading(true);
+    try {
+      if (provider === "google") await signInWithGoogle();
+      else if (provider === "kakao") await signInWithKakao();
+      else if (provider === "naver") await signInWithNaver();
     } catch (error: any) {
       Alert.alert("오류", error.message);
     } finally {
@@ -74,6 +94,38 @@ export function LoginScreen() {
             ? "이미 계정이 있나요? 로그인"
             : "계정이 없나요? 회원가입"}
         </Text>
+      </TouchableOpacity>
+
+      <View style={styles.divider}>
+        <View style={styles.dividerLine} />
+        <Text style={styles.dividerText}>또는</Text>
+        <View style={styles.dividerLine} />
+      </View>
+
+      <TouchableOpacity
+        style={[styles.socialButton, styles.googleButton]}
+        onPress={() => handleSocialLogin("google")}
+        disabled={loading}
+      >
+        <Text style={styles.socialButtonText}>Google로 계속하기</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[styles.socialButton, styles.kakaoButton]}
+        onPress={() => handleSocialLogin("kakao")}
+        disabled={loading}
+      >
+        <Text style={[styles.socialButtonText, styles.kakaoText]}>
+          카카오로 계속하기
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[styles.socialButton, styles.naverButton]}
+        onPress={() => handleSocialLogin("naver")}
+        disabled={loading}
+      >
+        <Text style={styles.socialButtonText}>네이버로 계속하기</Text>
       </TouchableOpacity>
     </View>
   );
@@ -122,5 +174,43 @@ const styles = StyleSheet.create({
     color: "#666",
     textAlign: "center",
     fontSize: 14,
+  },
+  divider: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 24,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#ddd",
+  },
+  dividerText: {
+    marginHorizontal: 12,
+    color: "#999",
+    fontSize: 14,
+  },
+  socialButton: {
+    borderRadius: 8,
+    padding: 14,
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  socialButtonText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#fff",
+  },
+  googleButton: {
+    backgroundColor: "#4285F4",
+  },
+  kakaoButton: {
+    backgroundColor: "#FEE500",
+  },
+  kakaoText: {
+    color: "#191919",
+  },
+  naverButton: {
+    backgroundColor: "#03C75A",
   },
 });
