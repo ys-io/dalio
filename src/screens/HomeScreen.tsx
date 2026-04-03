@@ -7,7 +7,7 @@ export function HomeScreen() {
 
   return (
     <Screen>
-      <Header>
+      <Header style={{ borderBottomColor: "#2c2c2e" }}>
         <Text variant="title">Dalio</Text>
         <Text variant="subtitle">
           {user?.displayName ?? user?.email ?? "사용자"}님, 환영합니다!
@@ -16,13 +16,13 @@ export function HomeScreen() {
 
       <Body>
         <View style={styles.calendarPlaceholder}>
-          <Text color="#ccc" style={{ fontSize: 18 }}>
+          <Text color="#636366" style={{ fontSize: 18 }}>
             캘린더 영역
           </Text>
         </View>
       </Body>
 
-      <Footer>
+      <Footer style={{ borderTopColor: "#2c2c2e" }}>
         <Button title="로그아웃" onPress={signOut} variant="danger" />
       </Footer>
     </Screen>
@@ -33,10 +33,10 @@ const styles = StyleSheet.create({
   calendarPlaceholder: {
     flex: 1,
     borderWidth: 1,
-    borderColor: "#eee",
+    borderColor: "#2c2c2e",
     borderRadius: 12,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fafafa",
+    backgroundColor: "#1c1c1e",
   },
 });
