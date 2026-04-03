@@ -1,33 +1,39 @@
 import { useState } from "react";
-import {
-  Alert,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Alert } from "react-native";
 import { useAuth } from "../providers/AuthProvider";
 import { signInWithGoogle } from "../lib/social-auth";
+import {
+  Button,
+  TextInput,
+  Text,
+  ScreenContainer,
+  Divider,
+} from "../components/ui";
 
 export function LoginScreen() {
   const { signInWithEmail, signUpWithEmail } = useAuth();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
-    if (!email || !password) {
-      Alert.alert("오류", "이메일과 비밀번호를 입력해주세요.");
+    if (!email || !password || (isSignUp && !name)) {
+      Alert.alert(
+        "오류",
+        isSignUp
+          ? "이름, 이메일, 비밀번호를 모두 입력해주세요."
+          : "이메일과 비밀번호를 입력해주세요.",
+      );
       return;
     }
 
     setLoading(true);
     try {
       if (isSignUp) {
-        await signUpWithEmail(email, password);
-        Alert.alert("완료", "인증 이메일을 확인해주세요.");
+        await signUpWithEmail(email, password, name);
+        Alert.alert("완료", "회원가입이 완료되었습니다.");
       } else {
         await signInWithEmail(email, password);
       }
@@ -50,131 +56,65 @@ export function LoginScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Dalio</Text>
-      <Text style={styles.subtitle}>캘린더 & 일정 관리</Text>
+    <ScreenContainer centered>
+      <Text variant="title" align="center" style={{ marginBottom: 4 }}>
+        Dalio
+      </Text>
+      <Text variant="subtitle" align="center" style={{ marginBottom: 32 }}>
+        캘린더 & 일정 관리
+      </Text>
+
+      {isSignUp && (
+        <TextInput
+          placeholder="이름"
+          value={name}
+          onChangeText={setName}
+          containerStyle={{ marginBottom: 12 }}
+        />
+      )}
 
       <TextInput
-        style={styles.input}
         placeholder="이메일"
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
         keyboardType="email-address"
+        containerStyle={{ marginBottom: 12 }}
       />
       <TextInput
-        style={styles.input}
         placeholder="비밀번호"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
+        containerStyle={{ marginBottom: 12 }}
       />
 
-      <TouchableOpacity
-        style={styles.button}
+      <Button
+        title={isSignUp ? "회원가입" : "로그인"}
         onPress={handleSubmit}
         disabled={loading}
-      >
-        <Text style={styles.buttonText}>
-          {loading ? "로딩..." : isSignUp ? "회원가입" : "로그인"}
-        </Text>
-      </TouchableOpacity>
+        loading={loading}
+        style={{ marginBottom: 12 }}
+      />
 
-      <TouchableOpacity onPress={() => setIsSignUp(!isSignUp)}>
-        <Text style={styles.toggleText}>
-          {isSignUp
+      <Button
+        title={
+          isSignUp
             ? "이미 계정이 있나요? 로그인"
-            : "계정이 없나요? 회원가입"}
-        </Text>
-      </TouchableOpacity>
+            : "계정이 없나요? 회원가입"
+        }
+        onPress={() => setIsSignUp(!isSignUp)}
+        variant="ghost"
+      />
 
-      <View style={styles.divider}>
-        <View style={styles.dividerLine} />
-        <Text style={styles.dividerText}>또는</Text>
-        <View style={styles.dividerLine} />
-      </View>
+      <Divider label="또는" />
 
-      <TouchableOpacity
-        style={[styles.socialButton, styles.googleButton]}
+      <Button
+        title="Google로 계속하기"
         onPress={handleGoogleLogin}
         disabled={loading}
-      >
-        <Text style={styles.socialButtonText}>Google로 계속하기</Text>
-      </TouchableOpacity>
-    </View>
+        style={{ backgroundColor: "#4285F4" }}
+      />
+    </ScreenContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    padding: 24,
-    backgroundColor: "#fff",
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#888",
-    textAlign: "center",
-    marginBottom: 32,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    marginBottom: 12,
-  },
-  button: {
-    backgroundColor: "#000",
-    borderRadius: 8,
-    padding: 14,
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  toggleText: {
-    color: "#666",
-    textAlign: "center",
-    fontSize: 14,
-  },
-  divider: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 24,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: "#ddd",
-  },
-  dividerText: {
-    marginHorizontal: 12,
-    color: "#999",
-    fontSize: 14,
-  },
-  socialButton: {
-    borderRadius: 8,
-    padding: 14,
-    alignItems: "center",
-  },
-  socialButtonText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#fff",
-  },
-  googleButton: {
-    backgroundColor: "#4285F4",
-  },
-});
