@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Alert } from "react-native";
 import { useAuth } from "../providers/AuthProvider";
 import { signInWithGoogle } from "../lib/social-auth";
+import { loginSchema, signUpSchema } from "../lib/validations";
+import { apiCall, validate, showError, showSuccess } from "../lib/api";
 import {
   Button,
   TextInput,
@@ -18,42 +19,35 @@ export function LoginScreen() {
   const [password, setPassword] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = async () => {
-    if (!email || !password || (isSignUp && !name)) {
-      Alert.alert(
-        "오류",
-        isSignUp
-          ? "이름, 이메일, 비밀번호를 모두 입력해주세요."
-          : "이메일과 비밀번호를 입력해주세요.",
-      );
-      return;
-    }
+    const schema = isSignUp ? signUpSchema : loginSchema;
+    const values = isSignUp ? { name, email, password } : { email, password };
+
+    const { errors: validationErrors } = await validate(schema, values);
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) return;
 
     setLoading(true);
-    try {
-      if (isSignUp) {
-        await signUpWithEmail(email, password, name);
-        Alert.alert("완료", "회원가입이 완료되었습니다.");
-      } else {
-        await signInWithEmail(email, password);
-      }
-    } catch (error: any) {
-      Alert.alert("오류", error.message);
-    } finally {
-      setLoading(false);
+    if (isSignUp) {
+      const { error } = await apiCall(() =>
+        signUpWithEmail(email, password, name),
+      );
+      if (error) showError(error);
+      else showSuccess("회원가입이 완료되었습니다.");
+    } else {
+      const { error } = await apiCall(() => signInWithEmail(email, password));
+      if (error) showError(error);
     }
+    setLoading(false);
   };
 
   const handleGoogleLogin = async () => {
     setLoading(true);
-    try {
-      await signInWithGoogle();
-    } catch (error: any) {
-      Alert.alert("오류", error.message);
-    } finally {
-      setLoading(false);
-    }
+    const { error } = await apiCall(() => signInWithGoogle());
+    if (error) showError(error);
+    setLoading(false);
   };
 
   return (
@@ -70,7 +64,11 @@ export function LoginScreen() {
           <TextInput
             placeholder="이름"
             value={name}
-            onChangeText={setName}
+            onChangeText={(v) => {
+              setName(v);
+              setErrors((prev) => ({ ...prev, name: "" }));
+            }}
+            error={errors.name}
             containerStyle={{ marginBottom: 12 }}
           />
         )}
@@ -78,16 +76,24 @@ export function LoginScreen() {
         <TextInput
           placeholder="이메일"
           value={email}
-          onChangeText={setEmail}
+          onChangeText={(v) => {
+            setEmail(v);
+            setErrors((prev) => ({ ...prev, email: "" }));
+          }}
           autoCapitalize="none"
           keyboardType="email-address"
+          error={errors.email}
           containerStyle={{ marginBottom: 12 }}
         />
         <TextInput
           placeholder="비밀번호"
           value={password}
-          onChangeText={setPassword}
+          onChangeText={(v) => {
+            setPassword(v);
+            setErrors((prev) => ({ ...prev, password: "" }));
+          }}
           secureTextEntry
+          error={errors.password}
           containerStyle={{ marginBottom: 12 }}
         />
 
@@ -105,7 +111,10 @@ export function LoginScreen() {
               ? "이미 계정이 있나요? 로그인"
               : "계정이 없나요? 회원가입"
           }
-          onPress={() => setIsSignUp(!isSignUp)}
+          onPress={() => {
+            setIsSignUp(!isSignUp);
+            setErrors({});
+          }}
           variant="ghost"
         />
 
