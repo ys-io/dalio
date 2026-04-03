@@ -1,20 +1,29 @@
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import { login as kakaoLogin } from "@react-native-seoul/kakao-login";
-import NaverLogin from "@react-native-seoul/naver-login";
+import { Platform } from "react-native";
 import { supabase } from "./supabase";
 
-GoogleSignin.configure({
-  webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-});
+let GoogleSignin: any;
 
-NaverLogin.initialize({
-  appName: "Dalio",
-  consumerKey: process.env.EXPO_PUBLIC_NAVER_CLIENT_ID!,
-  consumerSecret: process.env.EXPO_PUBLIC_NAVER_CLIENT_SECRET!,
-});
+if (Platform.OS !== "web") {
+  GoogleSignin =
+    require("@react-native-google-signin/google-signin").GoogleSignin;
 
-// ─── Google ─────────────────────────────────────────────
+  GoogleSignin.configure({
+    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+  });
+}
+
 export async function signInWithGoogle() {
+  if (Platform.OS === "web") {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
+    if (error) throw error;
+    return;
+  }
+
   await GoogleSignin.hasPlayServices();
   const response = await GoogleSignin.signIn();
 
@@ -25,40 +34,6 @@ export async function signInWithGoogle() {
   const { error } = await supabase.auth.signInWithIdToken({
     provider: "google",
     token: response.data.idToken,
-  });
-
-  if (error) throw error;
-}
-
-// ─── Kakao ──────────────────────────────────────────────
-export async function signInWithKakao() {
-  const result = await kakaoLogin();
-
-  const { error } = await supabase.functions.invoke("social-auth", {
-    body: {
-      provider: "kakao",
-      accessToken: result.accessToken,
-    },
-  });
-
-  if (error) throw error;
-}
-
-// ─── Naver ──────────────────────────────────────────────
-export async function signInWithNaver() {
-  const { successResponse, failureResponse } = await NaverLogin.login();
-
-  if (failureResponse || !successResponse) {
-    throw new Error(
-      failureResponse?.message ?? "네이버 로그인에 실패했습니다.",
-    );
-  }
-
-  const { error } = await supabase.functions.invoke("social-auth", {
-    body: {
-      provider: "naver",
-      accessToken: successResponse.accessToken,
-    },
   });
 
   if (error) throw error;

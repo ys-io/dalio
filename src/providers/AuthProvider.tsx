@@ -9,7 +9,7 @@ import {
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabase";
 
-type Provider = "email" | "google" | "kakao" | "naver";
+type Provider = "email" | "google";
 
 interface AuthUser {
   id: string;

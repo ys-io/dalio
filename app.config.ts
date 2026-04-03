@@ -17,9 +17,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     supportsTablet: true,
     bundleIdentifier: "io.ys.dalio",
-    infoPlist: {
-      LSApplicationQueriesSchemes: ["kakaokompassauth", "naversearchapp"],
-    },
   },
   android: {
     package: "io.ys.dalio",
@@ -38,13 +35,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       "@react-native-google-signin/google-signin",
       {
         iosUrlScheme: process.env.EXPO_PUBLIC_GOOGLE_IOS_URL_SCHEME ?? "",
-      },
-    ],
-    [
-      "@react-native-seoul/kakao-login",
-      {
-        kakaoAppKey: process.env.EXPO_PUBLIC_KAKAO_APP_KEY ?? "",
-        kakaoCustomUrlScheme: `kakao${process.env.EXPO_PUBLIC_KAKAO_APP_KEY ?? ""}`,
       },
     ],
   ],

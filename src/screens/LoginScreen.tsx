@@ -8,11 +8,7 @@ import {
   View,
 } from "react-native";
 import { useAuth } from "../providers/AuthProvider";
-import {
-  signInWithGoogle,
-  signInWithKakao,
-  signInWithNaver,
-} from "../lib/social-auth";
+import { signInWithGoogle } from "../lib/social-auth";
 
 export function LoginScreen() {
   const { signInWithEmail, signUpWithEmail } = useAuth();
@@ -42,14 +38,10 @@ export function LoginScreen() {
     }
   };
 
-  const handleSocialLogin = async (
-    provider: "google" | "kakao" | "naver",
-  ) => {
+  const handleGoogleLogin = async () => {
     setLoading(true);
     try {
-      if (provider === "google") await signInWithGoogle();
-      else if (provider === "kakao") await signInWithKakao();
-      else if (provider === "naver") await signInWithNaver();
+      await signInWithGoogle();
     } catch (error: any) {
       Alert.alert("오류", error.message);
     } finally {
@@ -104,28 +96,10 @@ export function LoginScreen() {
 
       <TouchableOpacity
         style={[styles.socialButton, styles.googleButton]}
-        onPress={() => handleSocialLogin("google")}
+        onPress={handleGoogleLogin}
         disabled={loading}
       >
         <Text style={styles.socialButtonText}>Google로 계속하기</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={[styles.socialButton, styles.kakaoButton]}
-        onPress={() => handleSocialLogin("kakao")}
-        disabled={loading}
-      >
-        <Text style={[styles.socialButtonText, styles.kakaoText]}>
-          카카오로 계속하기
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={[styles.socialButton, styles.naverButton]}
-        onPress={() => handleSocialLogin("naver")}
-        disabled={loading}
-      >
-        <Text style={styles.socialButtonText}>네이버로 계속하기</Text>
       </TouchableOpacity>
     </View>
   );
@@ -194,7 +168,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 14,
     alignItems: "center",
-    marginBottom: 10,
   },
   socialButtonText: {
     fontSize: 16,
@@ -203,14 +176,5 @@ const styles = StyleSheet.create({
   },
   googleButton: {
     backgroundColor: "#4285F4",
-  },
-  kakaoButton: {
-    backgroundColor: "#FEE500",
-  },
-  kakaoText: {
-    color: "#191919",
-  },
-  naverButton: {
-    backgroundColor: "#03C75A",
   },
 });
