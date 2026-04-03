@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAuth } from "../providers/AuthProvider";
 import { signInWithGoogle } from "../lib/social-auth";
 import { loginSchema, signUpSchema } from "../lib/validations";
-import { apiCall, validate, showError, showSuccess } from "../lib/api";
+import { apiCall, validate } from "../lib/api";
 import {
   Button,
   TextInput,
@@ -20,8 +20,13 @@ export function LoginScreen() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [formMessage, setFormMessage] = useState<{
+    text: string;
+    type: "error" | "success";
+  } | null>(null);
 
   const handleSubmit = async () => {
+    setFormMessage(null);
     const schema = isSignUp ? signUpSchema : loginSchema;
     const values = isSignUp ? { name, email, password } : { email, password };
 
@@ -34,19 +39,28 @@ export function LoginScreen() {
       const { error } = await apiCall(() =>
         signUpWithEmail(email, password, name),
       );
-      if (error) showError(error);
-      else showSuccess("회원가입이 완료되었습니다.");
+      if (error) setFormMessage({ text: error, type: "error" });
+      else
+        setFormMessage({
+          text: "회원가입이 완료되었습니다.",
+          type: "success",
+        });
     } else {
       const { error } = await apiCall(() => signInWithEmail(email, password));
-      if (error) showError(error);
+      if (error)
+        setFormMessage({
+          text: "이메일 또는 비밀번호를 확인해주세요.",
+          type: "error",
+        });
     }
     setLoading(false);
   };
 
   const handleGoogleLogin = async () => {
+    setFormMessage(null);
     setLoading(true);
     const { error } = await apiCall(() => signInWithGoogle());
-    if (error) showError(error);
+    if (error) setFormMessage({ text: error, type: "error" });
     setLoading(false);
   };
 
@@ -60,6 +74,17 @@ export function LoginScreen() {
           캘린더 & 일정 관리
         </Text>
 
+        {formMessage && (
+          <Text
+            variant="body"
+            align="center"
+            color={formMessage.type === "error" ? "#ee0000" : "#22c55e"}
+            style={{ marginBottom: 16, fontSize: 14 }}
+          >
+            {formMessage.text}
+          </Text>
+        )}
+
         {isSignUp && (
           <TextInput
             placeholder="이름"
@@ -67,6 +92,7 @@ export function LoginScreen() {
             onChangeText={(v) => {
               setName(v);
               setErrors((prev) => ({ ...prev, name: "" }));
+              setFormMessage(null);
             }}
             onSubmitEditing={handleSubmit}
             error={errors.name}
@@ -80,6 +106,7 @@ export function LoginScreen() {
           onChangeText={(v) => {
             setEmail(v);
             setErrors((prev) => ({ ...prev, email: "" }));
+            setFormMessage(null);
           }}
           autoCapitalize="none"
           keyboardType="email-address"
@@ -93,6 +120,7 @@ export function LoginScreen() {
           onChangeText={(v) => {
             setPassword(v);
             setErrors((prev) => ({ ...prev, password: "" }));
+            setFormMessage(null);
           }}
           secureTextEntry
           onSubmitEditing={handleSubmit}
@@ -117,6 +145,7 @@ export function LoginScreen() {
           onPress={() => {
             setIsSignUp(!isSignUp);
             setErrors({});
+            setFormMessage(null);
           }}
           variant="ghost"
         />
