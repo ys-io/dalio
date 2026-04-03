@@ -30,13 +30,16 @@ export function LoginScreen() {
   };
 
   const handleSubmit = async () => {
-    const schema = isSignUp ? signUpSchema : loginSchema;
-    const values = isSignUp ? { name, email, password } : { email, password };
-
-    const { errors: validationErrors } = await validate(schema, values);
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
+    if (isSignUp) {
+      const { errors: validationErrors } = await validate(signUpSchema, {
+        name,
+        email,
+        password,
+      });
+      if (Object.keys(validationErrors).length > 0) {
+        setErrors(validationErrors);
+        return;
+      }
     }
 
     setErrors({});
