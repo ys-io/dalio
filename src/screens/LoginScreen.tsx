@@ -3,7 +3,7 @@ import { TextInput as RNTextInput } from "react-native";
 import { useAuth } from "../providers/AuthProvider";
 import { signInWithGoogle } from "../lib/social-auth";
 import { signUpSchema } from "../lib/validations";
-import { apiCall, validate } from "../lib/api";
+import { apiCall, validate } from "../utils";
 import { supabase } from "../lib/supabase";
 import {
   Button,
