@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { TextInput as RNTextInput } from "react-native";
 import { useAuth } from "../providers/AuthProvider";
 import { signInWithGoogle } from "../lib/social-auth";
-import { loginSchema, signUpSchema } from "../lib/validations";
+import { signUpSchema } from "../lib/validations";
 import { apiCall, validate } from "../lib/api";
 import {
   Button,
@@ -20,6 +21,9 @@ export function LoginScreen() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const emailRef = useRef<RNTextInput>(null);
+  const passwordRef = useRef<RNTextInput>(null);
 
   const clearError = (field: string) => {
     setErrors((prev) => {
@@ -50,14 +54,33 @@ export function LoginScreen() {
       );
       if (error) {
         setErrors({ email: error });
+        emailRef.current?.focus();
       }
     } else {
-      const { error } = await apiCall(() => signInWithEmail(email, password));
+      const { error, raw } = await apiCall(() =>
+        signInWithEmail(email, password),
+      );
       if (error) {
-        setErrors({
-          email: "이메일 또는 비밀번호를 확인해주세요.",
-          password: "이메일 또는 비밀번호를 확인해주세요.",
-        });
+        const isUserNotFound =
+          raw === "Invalid login credentials" ||
+          raw === "User not found" ||
+          raw === "invalid_credentials";
+        const isInvalidPassword =
+          raw === "Invalid login credentials" && password.length > 0;
+
+        // Supabase는 보안상 "Invalid login credentials"로 통일하므로
+        // email이 비어있으면 이메일 에러, 아니면 비밀번호 에러로 처리
+        if (!email) {
+          setErrors({ email: "이메일을 입력해주세요." });
+          emailRef.current?.focus();
+        } else if (!password) {
+          setErrors({ password: "비밀번호를 입력해주세요." });
+          passwordRef.current?.focus();
+        } else {
+          // 둘 다 입력된 상태에서 실패 → 비밀번호 에러로 표시
+          setErrors({ password: "이메일 또는 비밀번호가 일치하지 않습니다." });
+          passwordRef.current?.focus();
+        }
       }
     }
     setLoading(false);
@@ -69,6 +92,7 @@ export function LoginScreen() {
     const { error } = await apiCall(() => signInWithGoogle());
     if (error) {
       setErrors({ email: error });
+      emailRef.current?.focus();
     }
     setLoading(false);
   };
@@ -98,12 +122,12 @@ export function LoginScreen() {
         )}
 
         <TextInput
+          ref={emailRef}
           placeholder="이메일"
           value={email}
           onChangeText={(v) => {
             setEmail(v);
             clearError("email");
-            clearError("password");
           }}
           autoCapitalize="none"
           keyboardType="email-address"
@@ -112,12 +136,12 @@ export function LoginScreen() {
           containerStyle={{ marginBottom: 12 }}
         />
         <TextInput
+          ref={passwordRef}
           placeholder="비밀번호"
           value={password}
           onChangeText={(v) => {
             setPassword(v);
             clearError("password");
-            clearError("email");
           }}
           secureTextEntry
           onSubmitEditing={handleSubmit}
