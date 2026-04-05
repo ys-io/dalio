@@ -245,6 +245,15 @@ export function LoginScreen() {
           />
         )}
 
+        <Divider label="또는" />
+
+        <Button
+          title="Google로 계속하기"
+          onPress={handleGoogleLogin}
+          disabled={loading}
+          style={{ marginBottom: 12 }}
+        />
+
         <Button
           title={isSignUp ? "로그인" : "회원가입"}
           onPress={() => {
@@ -252,15 +261,6 @@ export function LoginScreen() {
             setErrors({});
           }}
           style={{ marginBottom: 16 }}
-        />
-
-        <Divider label="또는" />
-
-        <Button
-          title="Google로 계속하기"
-          onPress={handleGoogleLogin}
-          disabled={loading}
-          style={{ marginBottom: 24 }}
         />
 
         {isSignUp && (
