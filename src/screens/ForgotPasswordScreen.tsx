@@ -46,11 +46,9 @@ export function ForgotPasswordScreen({ onBack }: Props) {
       return;
     }
 
-    const { error: apiError } = await apiCall(() =>
-      supabase.auth.resetPasswordForEmail(email),
-    );
-    if (apiError) {
-      setError(apiError);
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email);
+    if (resetError) {
+      setError(resetError.message);
       emailRef.current?.focus();
     } else {
       setSent(true);
