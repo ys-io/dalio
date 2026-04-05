@@ -1,6 +1,6 @@
 import { useEffect, type RefObject } from "react";
 import type { TextInput } from "react-native";
-import { FOCUS_DELAY } from "../constans";
+import { FOCUS_DELAY } from "../../constans";
 
 export function useAutoFocus(ref: RefObject<TextInput | null>) {
   useEffect(() => {
