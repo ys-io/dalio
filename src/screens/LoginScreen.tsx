@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { TextInput as RNTextInput, View, Pressable, StyleSheet, Platform } from "react-native";
+import { TextInput as RNTextInput, View, Pressable, Platform } from "react-native";
+import { styles } from "./LoginScreen.styles";
 import { useAuth } from "../providers/AuthProvider";
 import { signInWithGoogle } from "../lib/social-auth";
 import { signUpSchema } from "../lib/validations";
@@ -185,11 +186,11 @@ export function LoginScreen() {
         <Text
           variant="title"
           align="center"
-          style={{ marginBottom: 8, marginTop: 40 }}
+          style={styles.title}
         >
           📅 Dalio
         </Text>
-        <Text variant="subtitle" align="center" style={{ marginBottom: 40 }}>
+        <Text variant="subtitle" align="center" style={styles.subtitle}>
           친구들과 일정을 공유하고{"\n"}함께 계획을 세워보세요
         </Text>
 
@@ -206,7 +207,7 @@ export function LoginScreen() {
               }}
               onSubmitEditing={handleSubmit}
               error={errors.name}
-              containerStyle={{ marginBottom: 16 }}
+              containerStyle={styles.fieldMargin}
             />
 
             <TextInput
@@ -222,7 +223,7 @@ export function LoginScreen() {
               keyboardType="email-address"
               onSubmitEditing={handleSubmit}
               error={errors.email}
-              containerStyle={{ marginBottom: 16 }}
+              containerStyle={styles.fieldMargin}
             />
 
             <TextInput
@@ -237,7 +238,7 @@ export function LoginScreen() {
               secureTextEntry
               onSubmitEditing={handleSubmit}
               error={errors.password}
-              containerStyle={{ marginBottom: 4 }}
+              containerStyle={styles.fieldMarginSmall}
             />
 
             <PasswordStrength password={password} />
@@ -254,7 +255,7 @@ export function LoginScreen() {
               secureTextEntry
               onSubmitEditing={handleSubmit}
               error={errors.passwordConfirm}
-              containerStyle={{ marginBottom: 16 }}
+              containerStyle={styles.fieldMargin}
             />
 
             <View style={styles.checkboxGroup}>
@@ -278,7 +279,7 @@ export function LoginScreen() {
                     <Text variant="caption" color="#fff">✓</Text>
                   )}
                 </View>
-                <Text variant="body" style={{ fontSize: 14 }}>
+                <Text variant="body" style={styles.allAgreeText}>
                   전체 동의
                 </Text>
               </FocusablePressable>
@@ -340,7 +341,7 @@ export function LoginScreen() {
               </View>
 
               {errors.agree ? (
-                <Text variant="caption" color="#ff453a" style={{ marginTop: 8 }}>
+                <Text variant="caption" color="#ff453a" style={styles.errorMargin}>
                   {errors.agree}
                 </Text>
               ) : null}
@@ -363,7 +364,7 @@ export function LoginScreen() {
               keyboardType="email-address"
               onSubmitEditing={handleSubmit}
               error={errors.email}
-              containerStyle={{ marginBottom: 16 }}
+              containerStyle={styles.fieldMargin}
             />
 
             <TextInput
@@ -378,7 +379,7 @@ export function LoginScreen() {
               secureTextEntry
               onSubmitEditing={handleSubmit}
               error={errors.password}
-              containerStyle={{ marginBottom: 32 }}
+              containerStyle={styles.fieldMargin}
             />
           </>
         )}
@@ -389,7 +390,7 @@ export function LoginScreen() {
           disabled={loading}
           loading={loading}
           variant="primary"
-          style={{ marginBottom: 12 }}
+          style={styles.buttonMargin}
         />
 
         {view === "signup" ? (
@@ -402,7 +403,7 @@ export function LoginScreen() {
               }}
               disabled={loading}
               variant="secondary"
-              style={{ marginBottom: 16 }}
+              style={styles.buttonMarginLarge}
             />
           </>
         ) : (
@@ -412,7 +413,7 @@ export function LoginScreen() {
               onPress={() => setView("forgotPassword")}
               disabled={loading}
               variant="secondary"
-              style={{ marginBottom: 12 }}
+              style={styles.buttonMargin}
             />
 
             <Divider label="또는" />
@@ -423,7 +424,7 @@ export function LoginScreen() {
               disabled={loading}
               variant="secondary"
               icon={<GoogleIcon />}
-              style={{ marginBottom: 12 }}
+              style={styles.buttonMargin}
             />
 
             <Button
@@ -435,7 +436,7 @@ export function LoginScreen() {
               }}
               disabled={loading}
               variant="secondary"
-              style={{ marginBottom: 16 }}
+              style={styles.buttonMarginLarge}
             />
           </>
         )}
@@ -484,55 +485,3 @@ function FocusablePressable({
   );
 }
 
-const styles = StyleSheet.create({
-  checkboxGroup: {
-    marginBottom: 24,
-  },
-  checkboxRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  checkboxInline: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 8,
-    gap: 12,
-    borderRadius: 8,
-    borderWidth: 2,
-    borderColor: "transparent",
-  },
-  checkboxRowFocused: {
-    borderColor: "#6366f1",
-  },
-  linkButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    borderWidth: 2,
-    borderColor: "transparent",
-  },
-  linkButtonFocused: {
-    borderColor: "#6366f1",
-  },
-  checkbox: {
-    width: 22,
-    height: 22,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: "#636366",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  checkboxChecked: {
-    backgroundColor: "#6366f1",
-    borderColor: "#6366f1",
-  },
-  dividerThin: {
-    height: 1,
-    backgroundColor: "#2c2c2e",
-    marginVertical: 4,
-  },
-});

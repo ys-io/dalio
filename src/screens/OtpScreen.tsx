@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { TextInput as RNTextInput, View, StyleSheet, Platform } from "react-native";
+import { TextInput as RNTextInput, View, Platform } from "react-native";
 import { Button, Text, Screen, Body } from "@ys-io/ui";
 import { supabase } from "../lib/supabase";
+import { styles } from "./OtpScreen.styles";
 
 interface Props {
   email: string;
@@ -144,14 +145,10 @@ export function OtpScreen({ email, type, onVerified, onBack }: Props) {
   return (
     <Screen>
       <Body centered>
-        <Text variant="title" align="center" style={{ marginBottom: 8 }}>
+        <Text variant="title" align="center" style={styles.title}>
           인증 코드 입력
         </Text>
-        <Text
-          variant="subtitle"
-          align="center"
-          style={{ marginBottom: 8, lineHeight: 24 }}
-        >
+        <Text variant="subtitle" align="center" style={styles.subtitle}>
           {email}으로{"\n"}6자리 코드를 보냈습니다.
         </Text>
 
@@ -159,7 +156,7 @@ export function OtpScreen({ email, type, onVerified, onBack }: Props) {
           variant="body"
           align="center"
           color={expired ? "#ff453a" : "#6366f1"}
-          style={{ marginBottom: 32, fontSize: 20, fontWeight: "bold" }}
+          style={styles.timer}
         >
           {expired ? "만료됨" : formatTime(remaining)}
         </Text>
@@ -195,13 +192,13 @@ export function OtpScreen({ email, type, onVerified, onBack }: Props) {
             variant="caption"
             color="#ff453a"
             align="center"
-            style={{ marginBottom: 16 }}
+            style={styles.errorText}
           >
             {error}
           </Text>
         ) : null}
 
-        <View style={{ marginBottom: 32 }} />
+        <View style={styles.spacer} />
 
         {expired ? (
           <Button
@@ -210,7 +207,7 @@ export function OtpScreen({ email, type, onVerified, onBack }: Props) {
             variant="primary"
             loading={resending}
             disabled={resending}
-            style={{ marginBottom: 12 }}
+            style={styles.resendButton}
           />
         ) : null}
 
@@ -224,30 +221,3 @@ export function OtpScreen({ email, type, onVerified, onBack }: Props) {
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  codeContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 8,
-    marginBottom: 16,
-  },
-  codeInput: {
-    width: 48,
-    height: 56,
-    backgroundColor: "#1c1c1e",
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "transparent",
-    textAlign: "center",
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#ffffff",
-  },
-  codeInputFilled: {
-    borderColor: "#6366f1",
-  },
-  codeInputError: {
-    borderColor: "#ff453a",
-  },
-});

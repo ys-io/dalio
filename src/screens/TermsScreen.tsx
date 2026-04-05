@@ -1,5 +1,5 @@
-import { ScrollView, StyleSheet } from "react-native";
 import { Button, Text, Screen, Body } from "@ys-io/ui";
+import { styles } from "./TermsScreen.styles";
 
 interface Props {
   onBack: () => void;
@@ -9,7 +9,7 @@ export function TermsScreen({ onBack }: Props) {
   return (
     <Screen scroll>
       <Body>
-        <Text variant="title" style={{ marginBottom: 24 }}>
+        <Text variant="title" style={styles.title}>
           이용약관
         </Text>
 
@@ -68,11 +68,7 @@ export function TermsScreen({ onBack }: Props) {
           지지 않습니다.
         </Text>
 
-        <Text
-          variant="caption"
-          color="#636366"
-          style={{ marginBottom: 32 }}
-        >
+        <Text variant="caption" color="#636366" style={styles.date}>
           시행일: 2026년 4월 5일
         </Text>
 
@@ -80,16 +76,9 @@ export function TermsScreen({ onBack }: Props) {
           title="돌아가기"
           onPress={onBack}
           variant="secondary"
-          style={{ marginBottom: 24 }}
+          style={styles.backButton}
         />
       </Body>
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  section: {
-    marginBottom: 24,
-    lineHeight: 24,
-  },
-});

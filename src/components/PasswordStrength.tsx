@@ -1,5 +1,6 @@
-import { View, StyleSheet } from "react-native";
+import { View } from "react-native";
 import { Text } from "@ys-io/ui";
+import { styles } from "./PasswordStrength.styles";
 
 interface Props {
   password: string;
@@ -14,10 +15,6 @@ const rules = [
 export function PasswordStrength({ password }: Props) {
   if (password === undefined) return null;
 
-  const passed = rules.filter((r) => r.test(password)).length;
-  const barColor =
-    passed === 3 ? "#22c55e" : passed === 2 ? "#eab308" : "#ff453a";
-
   return (
     <View style={styles.container}>
       <View style={styles.rules}>
@@ -29,7 +26,7 @@ export function PasswordStrength({ password }: Props) {
                 <Text
                   variant="caption"
                   color={ok ? "#22c55e" : "#636366"}
-                  style={{ fontSize: 12 }}
+                  style={styles.ruleText}
                 >
                   {ok ? "✓" : "○"}
                 </Text>
@@ -37,7 +34,7 @@ export function PasswordStrength({ password }: Props) {
               <Text
                 variant="caption"
                 color={ok ? "#22c55e" : "#636366"}
-                style={{ fontSize: 12 }}
+                style={styles.ruleText}
               >
                 {rule.label}
               </Text>
@@ -48,32 +45,3 @@ export function PasswordStrength({ password }: Props) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 4,
-    marginBottom: 16,
-  },
-  barContainer: {
-    flexDirection: "row",
-    gap: 4,
-    marginBottom: 8,
-  },
-  bar: {
-    flex: 1,
-    height: 3,
-    borderRadius: 2,
-  },
-  rules: {
-    gap: 4,
-  },
-  ruleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  iconContainer: {
-    width: 14,
-    alignItems: "center",
-  },
-});
