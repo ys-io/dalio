@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { useAuth } from "../../../providers/AuthProvider";
+import { useAuth } from "@providers/AuthProvider";
 import { Text, Button, Screen, Header, Body, Footer } from "@ys-io/ui";
 import { styles } from "./HomeScreen.styles";
 

@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from "react";
 import type { TextInput } from "react-native";
-import { OTP_LENGTH } from "../../constans/otp";
-import { FOCUS_DELAY } from "../../constans/time";
+import { OTP_LENGTH } from "@constans/otp";
+import { FOCUS_DELAY } from "@constans/time";
 
 export function useOtpInput(onComplete: (code: string) => void) {
   const [code, setCode] = useState<string[]>(Array(OTP_LENGTH).fill(""));

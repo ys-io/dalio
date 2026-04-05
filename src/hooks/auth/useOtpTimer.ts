@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { OTP_DURATION } from "../../constans/time";
+import { OTP_DURATION } from "@constans/time";
 
 export function useOtpTimer() {
   const [remaining, setRemaining] = useState(OTP_DURATION);

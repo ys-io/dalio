@@ -1,11 +1,11 @@
 import { useRef, useState } from "react";
 import { TextInput as RNTextInput } from "react-native";
-import { useAuth } from "../../../../providers/AuthProvider";
-import { supabase } from "../../../../services/supabase";
+import { useAuth } from "@providers/AuthProvider";
+import { supabase } from "@services/supabase";
 import { Button, TextInput, Text, Screen, Body } from "@ys-io/ui";
-import { useAutoFocus } from "../../../../hooks/common/useAutoFocus";
-import { MSG } from "../../../../constans/messages";
-import { OtpScreen } from "../otp/OtpScreen";
+import { useAutoFocus } from "@hooks/common/useAutoFocus";
+import { MSG } from "@constans/messages";
+import { OtpScreen } from "@features/auth/screens/otp/OtpScreen";
 import { ResetPasswordScreen } from "./ResetPasswordScreen";
 
 interface Props {

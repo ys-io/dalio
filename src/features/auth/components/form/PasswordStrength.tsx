@@ -1,7 +1,7 @@
 import { View } from "react-native";
 import { Text } from "@ys-io/ui";
-import { PASSWORD_RULES } from "../../../../constans/password";
-import { COLORS } from "../../../../constans/colors";
+import { PASSWORD_RULES } from "@constans/password";
+import { COLORS } from "@constans/colors";
 import { styles } from "./PasswordStrength.styles";
 
 interface Props {
