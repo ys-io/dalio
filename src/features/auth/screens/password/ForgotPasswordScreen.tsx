@@ -93,17 +93,17 @@ export function ForgotPasswordScreen({ onBack }: Props) {
       <Screen>
         <Body centered>
           <Text variant="title" align="center" style={{ marginBottom: 16 }}>
-            비밀번호가 변경되었습니다!
+            {MSG.PASSWORD_CHANGED_TITLE}
           </Text>
           <Text
             variant="subtitle"
             align="center"
             style={{ marginBottom: 40, lineHeight: 24 }}
           >
-            새 비밀번호로 로그인해주세요.
+            {MSG.PASSWORD_CHANGED_SUBTITLE}
           </Text>
           <Button
-            title="로그인으로 돌아가기"
+            title={MSG.BACK_TO_LOGIN}
             onPress={onBack}
             variant="primary"
           />
@@ -116,20 +116,20 @@ export function ForgotPasswordScreen({ onBack }: Props) {
     <Screen>
       <Body centered>
         <Text variant="title" align="center" style={{ marginBottom: 8 }}>
-          비밀번호 찾기
+          {MSG.FORGOT_PASSWORD_TITLE}
         </Text>
         <Text
           variant="subtitle"
           align="center"
           style={{ marginBottom: 40, lineHeight: 24 }}
         >
-          가입한 이메일을 입력하시면{"\n"}인증 코드를 보내드립니다.
+          {MSG.FORGOT_PASSWORD_SUBTITLE}
         </Text>
 
         <TextInput
           ref={emailRef}
-          label="이메일"
-          placeholder="example@email.com"
+          label={MSG.LABEL_EMAIL}
+          placeholder={MSG.PLACEHOLDER_EMAIL}
           value={email}
           onChangeText={(v) => {
             setEmail(v);
@@ -143,7 +143,7 @@ export function ForgotPasswordScreen({ onBack }: Props) {
         />
 
         <Button
-          title="인증 코드 보내기"
+          title={MSG.BTN_SEND_OTP}
           onPress={handleSubmit}
           disabled={loading}
           loading={loading}
@@ -152,7 +152,7 @@ export function ForgotPasswordScreen({ onBack }: Props) {
         />
 
         <Button
-          title="로그인으로 돌아가기"
+          title={MSG.BACK_TO_LOGIN}
           onPress={onBack}
           variant="secondary"
         />

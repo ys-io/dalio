@@ -1,4 +1,5 @@
 import { Button } from "@ys-io/ui";
+import { MSG } from "@constans/messages";
 import { styles } from "./SignupActions.styles";
 
 interface Props {
@@ -9,7 +10,7 @@ interface Props {
 export function SignupActions({ loading, onBack }: Props) {
   return (
     <Button
-      title="로그인으로 돌아가기"
+      title={MSG.BACK_TO_LOGIN}
       onPress={onBack}
       disabled={loading}
       variant="secondary"

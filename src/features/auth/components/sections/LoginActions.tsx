@@ -1,5 +1,6 @@
 import { Button, Divider } from "@ys-io/ui";
 import { GoogleIcon } from "@features/auth/components/icons/GoogleIcon";
+import { MSG } from "@constans/messages";
 import { styles } from "./LoginActions.styles";
 
 interface Props {
@@ -18,15 +19,15 @@ export function LoginActions({
   return (
     <>
       <Button
-        title="비밀번호를 잊으셨나요?"
+        title={MSG.BTN_FORGOT_PASSWORD}
         onPress={onForgotPassword}
         disabled={loading}
         variant="secondary"
         style={styles.buttonMargin}
       />
-      <Divider label="또는" />
+      <Divider label={MSG.OR} />
       <Button
-        title="Google로 계속하기"
+        title={MSG.BTN_GOOGLE_LOGIN}
         onPress={onGoogleLogin}
         disabled={loading}
         variant="secondary"
@@ -34,7 +35,7 @@ export function LoginActions({
         style={styles.buttonMargin}
       />
       <Button
-        title="회원가입"
+        title={MSG.BTN_SIGNUP}
         onPress={onSignup}
         disabled={loading}
         variant="secondary"

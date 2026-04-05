@@ -1,6 +1,7 @@
 import { forwardRef } from "react";
 import { TextInput as RNTextInput } from "react-native";
 import { TextInput } from "@ys-io/ui";
+import { MSG } from "@constans/messages";
 
 interface Props {
   value: string;
@@ -15,8 +16,8 @@ export const EmailInput = forwardRef<RNTextInput, Props>(
     return (
       <TextInput
         ref={ref}
-        label="이메일"
-        placeholder="example@email.com"
+        label={MSG.LABEL_EMAIL}
+        placeholder={MSG.PLACEHOLDER_EMAIL}
         value={value}
         onChangeText={onChange}
         autoCapitalize="none"

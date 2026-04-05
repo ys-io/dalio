@@ -1,4 +1,5 @@
 import { Button, Text, Screen, Body } from "@ys-io/ui";
+import { MSG } from "@constans/messages";
 import { styles } from "./PrivacyScreen.styles";
 
 interface Props {
@@ -73,7 +74,7 @@ export function PrivacyScreen({ onBack }: Props) {
         </Text>
 
         <Button
-          title="돌아가기"
+          title={MSG.BACK}
           onPress={onBack}
           variant="secondary"
           style={styles.backButton}

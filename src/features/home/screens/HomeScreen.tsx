@@ -1,6 +1,7 @@
 import { View } from "react-native";
 import { useAuth } from "@providers/AuthProvider";
 import { Text, Button, Screen, Header, Body, Footer } from "@ys-io/ui";
+import { MSG } from "@constans/messages";
 import { styles } from "./HomeScreen.styles";
 
 export function HomeScreen() {
@@ -11,20 +12,20 @@ export function HomeScreen() {
       <Header style={styles.headerBorder}>
         <Text variant="title" style={styles.titleMargin}>Dalio</Text>
         <Text variant="subtitle" style={styles.subtitleMargin}>
-          {user?.displayName ?? user?.email ?? "사용자"}님, 환영합니다!
+          {user?.displayName ?? user?.email ?? MSG.HOME_DEFAULT_USER}{MSG.HOME_WELCOME_SUFFIX}
         </Text>
       </Header>
 
       <Body>
         <View style={styles.calendarPlaceholder}>
           <Text color="#636366" style={styles.calendarText}>
-            캘린더 영역
+            {MSG.HOME_CALENDAR_PLACEHOLDER}
           </Text>
         </View>
       </Body>
 
       <Footer style={styles.footerBorder}>
-        <Button title="로그아웃" onPress={signOut} variant="danger" />
+        <Button title={MSG.BTN_LOGOUT} onPress={signOut} variant="danger" />
       </Footer>
     </Screen>
   );

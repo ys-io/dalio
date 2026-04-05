@@ -6,6 +6,7 @@ import { supabase } from "@services/supabase";
 import { resetPasswordSchema } from "@features/auth/lib/validations";
 import { useFormErrors } from "@hooks/common/useFormErrors";
 import { PasswordStrength } from "@features/auth/components/form/PasswordStrength";
+import { MSG } from "@constans/messages";
 import { useState } from "react";
 
 interface Props {
@@ -49,20 +50,20 @@ export function ResetPasswordScreen({ onComplete }: Props) {
     <Screen>
       <Body centered>
         <Text variant="title" align="center" style={{ marginBottom: 8 }}>
-          새 비밀번호 설정
+          {MSG.RESET_PASSWORD_TITLE}
         </Text>
         <Text
           variant="subtitle"
           align="center"
           style={{ marginBottom: 40, lineHeight: 24 }}
         >
-          새로운 비밀번호를 입력해주세요.
+          {MSG.RESET_PASSWORD_SUBTITLE}
         </Text>
 
         <TextInput
           ref={passwordRef}
-          label="새 비밀번호"
-          placeholder="8자 이상, 대문자·특수문자 포함"
+          label={MSG.LABEL_NEW_PASSWORD}
+          placeholder={MSG.PLACEHOLDER_PASSWORD_SIGNUP}
           value={password}
           onChangeText={(v) => {
             setPassword(v);
@@ -78,8 +79,8 @@ export function ResetPasswordScreen({ onComplete }: Props) {
 
         <TextInput
           ref={confirmRef}
-          label="새 비밀번호 확인"
-          placeholder="비밀번호를 다시 입력하세요"
+          label={MSG.LABEL_NEW_PASSWORD_CONFIRM}
+          placeholder={MSG.PLACEHOLDER_PASSWORD_CONFIRM}
           value={passwordConfirm}
           onChangeText={(v) => {
             setPasswordConfirm(v);
@@ -92,7 +93,7 @@ export function ResetPasswordScreen({ onComplete }: Props) {
         />
 
         <Button
-          title="비밀번호 변경"
+          title={MSG.BTN_CHANGE_PASSWORD}
           onPress={handleSubmit}
           disabled={loading}
           loading={loading}

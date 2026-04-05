@@ -1,6 +1,7 @@
 import { forwardRef } from "react";
 import { TextInput as RNTextInput } from "react-native";
 import { TextInput } from "@ys-io/ui";
+import { MSG } from "@constans/messages";
 
 interface Props {
   value: string;
@@ -19,8 +20,8 @@ export const PasswordInput = forwardRef<RNTextInput, Props>(
       onChange,
       onSubmit,
       error,
-      placeholder = "비밀번호를 입력하세요",
-      label = "비밀번호",
+      placeholder = MSG.PLACEHOLDER_PASSWORD,
+      label = MSG.LABEL_PASSWORD,
       style,
     },
     ref,

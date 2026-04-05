@@ -2,6 +2,7 @@ import { View } from "react-native";
 import { Text } from "@ys-io/ui";
 import { FocusablePressable } from "@components/common/FocusablePressable";
 import { COLORS } from "@constans/colors";
+import { MSG } from "@constans/messages";
 import { styles } from "./TermsAgreement.styles";
 
 interface Props {
@@ -37,7 +38,7 @@ export function TermsAgreement({
         <View style={[styles.checkbox, allAgreed && styles.checkboxChecked]}>
           {allAgreed && <Text variant="caption" color="#fff">✓</Text>}
         </View>
-        <Text variant="body" style={styles.allAgreeText}>전체 동의</Text>
+        <Text variant="body" style={styles.allAgreeText}>{MSG.TERMS_AGREE_ALL}</Text>
       </FocusablePressable>
 
       <View style={styles.divider} />
@@ -51,14 +52,14 @@ export function TermsAgreement({
           <View style={[styles.checkbox, agreedTerms && styles.checkboxChecked]}>
             {agreedTerms && <Text variant="caption" color="#fff">✓</Text>}
           </View>
-          <Text variant="caption">이용약관 동의 (필수)</Text>
+          <Text variant="caption">{MSG.TERMS_AGREE_TOS}</Text>
         </FocusablePressable>
         <FocusablePressable
           style={styles.linkButton}
           focusedStyle={styles.linkFocused}
           onPress={onViewTerms}
         >
-          <Text variant="caption" color={COLORS.primary}>보기</Text>
+          <Text variant="caption" color={COLORS.primary}>{MSG.TERMS_VIEW}</Text>
         </FocusablePressable>
       </View>
 
@@ -71,14 +72,14 @@ export function TermsAgreement({
           <View style={[styles.checkbox, agreedPrivacy && styles.checkboxChecked]}>
             {agreedPrivacy && <Text variant="caption" color="#fff">✓</Text>}
           </View>
-          <Text variant="caption">개인정보처리방침 동의 (필수)</Text>
+          <Text variant="caption">{MSG.TERMS_AGREE_PRIVACY}</Text>
         </FocusablePressable>
         <FocusablePressable
           style={styles.linkButton}
           focusedStyle={styles.linkFocused}
           onPress={onViewPrivacy}
         >
-          <Text variant="caption" color={COLORS.primary}>보기</Text>
+          <Text variant="caption" color={COLORS.primary}>{MSG.TERMS_VIEW}</Text>
         </FocusablePressable>
       </View>
 

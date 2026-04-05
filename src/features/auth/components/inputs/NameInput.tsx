@@ -1,6 +1,7 @@
 import { forwardRef } from "react";
 import { TextInput as RNTextInput } from "react-native";
 import { TextInput } from "@ys-io/ui";
+import { MSG } from "@constans/messages";
 
 interface Props {
   value: string;
@@ -15,8 +16,8 @@ export const NameInput = forwardRef<RNTextInput, Props>(
     return (
       <TextInput
         ref={ref}
-        label="이름"
-        placeholder="홍길동"
+        label={MSG.LABEL_NAME}
+        placeholder={MSG.PLACEHOLDER_NAME}
         value={value}
         onChangeText={onChange}
         onSubmitEditing={onSubmit}

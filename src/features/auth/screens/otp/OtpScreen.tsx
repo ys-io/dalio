@@ -70,10 +70,10 @@ export function OtpScreen({ email, type, onVerified, onBack }: Props) {
     <Screen>
       <Body centered>
         <Text variant="title" align="center" style={styles.title}>
-          인증 코드 입력
+          {MSG.OTP_TITLE}
         </Text>
         <Text variant="subtitle" align="center" style={styles.subtitle}>
-          {email}으로{"\n"}6자리 코드를 보냈습니다.
+          {email}{MSG.OTP_SUBTITLE_SUFFIX}
         </Text>
 
         <Text
@@ -82,7 +82,7 @@ export function OtpScreen({ email, type, onVerified, onBack }: Props) {
           color={expired ? COLORS.error : COLORS.primary}
           style={styles.timer}
         >
-          {expired ? "만료됨" : formatTime(remaining)}
+          {expired ? MSG.TIMER_EXPIRED : formatTime(remaining)}
         </Text>
 
         <View style={styles.codeContainer}>
@@ -126,14 +126,14 @@ export function OtpScreen({ email, type, onVerified, onBack }: Props) {
 
         {expired ? (
           <Button
-            title="코드 재전송"
+            title={MSG.BTN_RESEND_OTP}
             onPress={handleResend}
             variant="primary"
             style={styles.resendButton}
           />
         ) : null}
 
-        <Button title="돌아가기" onPress={onBack} variant="secondary" />
+        <Button title={MSG.BACK} onPress={onBack} variant="secondary" />
       </Body>
     </Screen>
   );
