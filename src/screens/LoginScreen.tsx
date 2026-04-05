@@ -400,6 +400,7 @@ export function LoginScreen() {
                 setView("login");
                 resetForm();
               }}
+              disabled={loading}
               variant="secondary"
               style={{ marginBottom: 16 }}
             />
@@ -409,6 +410,7 @@ export function LoginScreen() {
             <Button
               title="비밀번호를 잊으셨나요?"
               onPress={() => setView("forgotPassword")}
+              disabled={loading}
               variant="secondary"
               style={{ marginBottom: 12 }}
             />
@@ -431,6 +433,7 @@ export function LoginScreen() {
                 resetForm();
                 setTimeout(() => nameRef.current?.focus(), 100);
               }}
+              disabled={loading}
               variant="secondary"
               style={{ marginBottom: 16 }}
             />
