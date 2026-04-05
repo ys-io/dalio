@@ -224,15 +224,7 @@ export function LoginScreen() {
               secureTextEntry
               onSubmitEditing={handleSubmit}
               error={errors.password}
-              containerStyle={{ marginBottom: 8 }}
-            />
-
-            <Button
-              title="비밀번호를 잊으셨나요?"
-              onPress={() => setIsForgotPassword(true)}
-              variant="ghost"
-              textStyle={{ fontSize: 13 }}
-              style={{ alignItems: "flex-end", marginBottom: 24 }}
+              containerStyle={{ marginBottom: 32 }}
             />
           </>
         )}
@@ -242,6 +234,23 @@ export function LoginScreen() {
           onPress={handleSubmit}
           disabled={loading}
           loading={loading}
+          style={{ marginBottom: 12 }}
+        />
+
+        {!isSignUp && (
+          <Button
+            title="비밀번호를 잊으셨나요?"
+            onPress={() => setIsForgotPassword(true)}
+            style={{ marginBottom: 12 }}
+          />
+        )}
+
+        <Button
+          title={isSignUp ? "로그인" : "회원가입"}
+          onPress={() => {
+            setIsSignUp(!isSignUp);
+            setErrors({});
+          }}
           style={{ marginBottom: 16 }}
         />
 
@@ -253,20 +262,6 @@ export function LoginScreen() {
           disabled={loading}
           style={{ marginBottom: 24 }}
         />
-
-        <Text variant="body" align="center" style={{ marginBottom: 16 }}>
-          {isSignUp ? "이미 계정이 있으신가요? " : "계정이 없으신가요? "}
-          <Text
-            variant="body"
-            style={{ fontWeight: "bold" }}
-            onPress={() => {
-              setIsSignUp(!isSignUp);
-              setErrors({});
-            }}
-          >
-            {isSignUp ? "로그인" : "회원가입"}
-          </Text>
-        </Text>
 
         {isSignUp && (
           <Text
