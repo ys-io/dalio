@@ -8,8 +8,10 @@ const darkTheme = {
   colors: {
     background: "#000000",
     surface: "#1c1c1e",
-    primary: "#1c1c1e",
+    primary: "#6366f1",
     primaryForeground: "#ffffff",
+    secondary: "#1c1c1e",
+    secondaryForeground: "#ffffff",
     danger: "#ff453a",
     textPrimary: "#ffffff",
     textSecondary: "#ababab",

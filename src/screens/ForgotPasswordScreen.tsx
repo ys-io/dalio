@@ -63,6 +63,7 @@ export function ForgotPasswordScreen({ onBack }: Props) {
           <Button
             title="로그인으로 돌아가기"
             onPress={onBack}
+            variant="primary"
           />
         </Body>
       </Screen>
@@ -107,6 +108,7 @@ export function ForgotPasswordScreen({ onBack }: Props) {
           title="재설정 링크 보내기"
           onPress={handleSubmit}
           disabled={loading}
+          variant="primary"
           loading={loading}
           style={{ marginBottom: 16 }}
         />
@@ -114,7 +116,7 @@ export function ForgotPasswordScreen({ onBack }: Props) {
         <Button
           title="로그인으로 돌아가기"
           onPress={onBack}
-          variant="ghost"
+          variant="secondary"
         />
       </Body>
     </Screen>

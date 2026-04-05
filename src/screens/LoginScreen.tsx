@@ -5,14 +5,7 @@ import { signInWithGoogle } from "../lib/social-auth";
 import { signUpSchema } from "../lib/validations";
 import { apiCall, validate } from "@ys-io/utils";
 import { supabase } from "../lib/supabase";
-import {
-  Button,
-  TextInput,
-  Text,
-  Screen,
-  Body,
-  Divider,
-} from "@ys-io/ui";
+import { Button, TextInput, Text, Screen, Body, Divider } from "@ys-io/ui";
 import { ForgotPasswordScreen } from "./ForgotPasswordScreen";
 
 export function LoginScreen() {
@@ -111,25 +104,12 @@ export function LoginScreen() {
   };
 
   if (isForgotPassword) {
-    return (
-      <ForgotPasswordScreen onBack={() => setIsForgotPassword(false)} />
-    );
+    return <ForgotPasswordScreen onBack={() => setIsForgotPassword(false)} />;
   }
 
   return (
     <Screen>
       <Body centered scroll>
-        <Text
-          variant="title"
-          align="center"
-          style={{ marginBottom: 8, marginTop: 40 }}
-        >
-          📅 Dalio
-        </Text>
-        <Text variant="subtitle" align="center" style={{ marginBottom: 40 }}>
-          친구들과 일정을 공유하고{"\n"}함께 계획을 세워보세요
-        </Text>
-
         {isSignUp && (
           <>
             <TextInput
@@ -234,6 +214,7 @@ export function LoginScreen() {
           onPress={handleSubmit}
           disabled={loading}
           loading={loading}
+          variant="primary"
           style={{ marginBottom: 12 }}
         />
 
@@ -241,6 +222,7 @@ export function LoginScreen() {
           <Button
             title="비밀번호를 잊으셨나요?"
             onPress={() => setIsForgotPassword(true)}
+            variant="secondary"
             style={{ marginBottom: 12 }}
           />
         )}
@@ -251,6 +233,7 @@ export function LoginScreen() {
           title="Google로 계속하기"
           onPress={handleGoogleLogin}
           disabled={loading}
+          variant="secondary"
           style={{ marginBottom: 12 }}
         />
 
@@ -260,15 +243,12 @@ export function LoginScreen() {
             setIsSignUp(!isSignUp);
             setErrors({});
           }}
+          variant="secondary"
           style={{ marginBottom: 16 }}
         />
 
         {isSignUp && (
-          <Text
-            variant="caption"
-            align="center"
-            style={{ marginBottom: 24 }}
-          >
+          <Text variant="caption" align="center" style={{ marginBottom: 24 }}>
             가입하면 이용약관 및 개인정보처리방침에 동의하게 됩니다
           </Text>
         )}
