@@ -12,7 +12,9 @@ export const signUpSchema = yup.object({
   password: yup
     .string()
     .required("비밀번호를 입력해주세요.")
-    .min(8, "비밀번호는 8자 이상이어야 합니다."),
+    .min(8, "비밀번호는 8자 이상이어야 합니다.")
+    .matches(/[A-Z]/, "대문자를 포함해야 합니다.")
+    .matches(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/, "특수문자를 포함해야 합니다."),
   passwordConfirm: yup
     .string()
     .required("비밀번호를 다시 입력해주세요.")
