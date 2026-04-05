@@ -41,7 +41,7 @@ export function PasswordStrength({ password }: Props) {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 8,
+    marginTop: 4,
     marginBottom: 16,
   },
   barContainer: {
