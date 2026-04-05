@@ -6,6 +6,7 @@ import { signUpSchema } from "../lib/validations";
 import { apiCall, validate } from "@ys-io/utils";
 import { supabase } from "../lib/supabase";
 import { Button, TextInput, Text, Screen, Body, Divider } from "@ys-io/ui";
+import { GoogleIcon } from "../components/GoogleIcon";
 import { ForgotPasswordScreen } from "./ForgotPasswordScreen";
 
 export function LoginScreen() {
@@ -218,39 +219,52 @@ export function LoginScreen() {
           style={{ marginBottom: 12 }}
         />
 
-        {!isSignUp && (
-          <Button
-            title="비밀번호를 잊으셨나요?"
-            onPress={() => setIsForgotPassword(true)}
-            variant="secondary"
-            style={{ marginBottom: 12 }}
-          />
-        )}
+        {isSignUp ? (
+          <>
+            <Button
+              title="뒤로가기"
+              onPress={() => {
+                setIsSignUp(false);
+                setErrors({});
+              }}
+              variant="secondary"
+              style={{ marginBottom: 16 }}
+            />
 
-        <Divider label="또는" />
+            <Text variant="caption" align="center" style={{ marginBottom: 24 }}>
+              가입하면 이용약관 및 개인정보처리방침에 동의하게 됩니다
+            </Text>
+          </>
+        ) : (
+          <>
+            <Button
+              title="비밀번호를 잊으셨나요?"
+              onPress={() => setIsForgotPassword(true)}
+              variant="secondary"
+              style={{ marginBottom: 12 }}
+            />
 
-        <Button
-          title="Google로 계속하기"
-          onPress={handleGoogleLogin}
-          disabled={loading}
-          variant="secondary"
-          style={{ marginBottom: 12 }}
-        />
+            <Divider label="또는" />
 
-        <Button
-          title={isSignUp ? "로그인" : "회원가입"}
-          onPress={() => {
-            setIsSignUp(!isSignUp);
-            setErrors({});
-          }}
-          variant="secondary"
-          style={{ marginBottom: 16 }}
-        />
+            <Button
+              title="Google로 계속하기"
+              onPress={handleGoogleLogin}
+              disabled={loading}
+              variant="secondary"
+              icon={<GoogleIcon />}
+              style={{ marginBottom: 12 }}
+            />
 
-        {isSignUp && (
-          <Text variant="caption" align="center" style={{ marginBottom: 24 }}>
-            가입하면 이용약관 및 개인정보처리방침에 동의하게 됩니다
-          </Text>
+            <Button
+              title="회원가입"
+              onPress={() => {
+                setIsSignUp(true);
+                setErrors({});
+              }}
+              variant="secondary"
+              style={{ marginBottom: 16 }}
+            />
+          </>
         )}
       </Body>
     </Screen>
