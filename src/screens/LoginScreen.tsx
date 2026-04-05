@@ -1,5 +1,5 @@
-import { useRef, useState, useCallback } from "react";
-import { TextInput as RNTextInput, View, Pressable, StyleSheet } from "react-native";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { TextInput as RNTextInput, View, Pressable, StyleSheet, Platform } from "react-native";
 import { useAuth } from "../providers/AuthProvider";
 import { signInWithGoogle } from "../lib/social-auth";
 import { signUpSchema } from "../lib/validations";
@@ -259,10 +259,10 @@ export function LoginScreen() {
 
             <View style={styles.checkboxGroup}>
               <FocusablePressable
-                style={styles.checkboxRow}
+                style={styles.checkboxInline}
                 focusedStyle={styles.checkboxRowFocused}
                 onPress={() => {
-                  const next = !agreedTerms || !agreedPrivacy;
+                  const next = !(agreedTerms && agreedPrivacy);
                   setAgreedTerms(next);
                   setAgreedPrivacy(next);
                   clearError("agree");
@@ -285,59 +285,59 @@ export function LoginScreen() {
 
               <View style={styles.dividerThin} />
 
-              <FocusablePressable
-                style={styles.checkboxRow}
-                focusedStyle={styles.checkboxRowFocused}
-                onPress={() => {
-                  setAgreedTerms(!agreedTerms);
-                  clearError("agree");
-                }}
-              >
-                <View
-                  style={[styles.checkbox, agreedTerms && styles.checkboxChecked]}
+              <View style={styles.checkboxRow}>
+                <FocusablePressable
+                  style={styles.checkboxInline}
+                  focusedStyle={styles.checkboxRowFocused}
+                  onPress={() => {
+                    setAgreedTerms(!agreedTerms);
+                    clearError("agree");
+                  }}
                 >
-                  {agreedTerms && (
-                    <Text variant="caption" color="#fff">✓</Text>
-                  )}
-                </View>
-                <Text variant="caption" style={{ flex: 1 }}>
-                  이용약관 동의 (필수)
-                </Text>
-                <Text
-                  variant="caption"
-                  color="#6366f1"
+                  <View
+                    style={[styles.checkbox, agreedTerms && styles.checkboxChecked]}
+                  >
+                    {agreedTerms && (
+                      <Text variant="caption" color="#fff">✓</Text>
+                    )}
+                  </View>
+                  <Text variant="caption">이용약관 동의 (필수)</Text>
+                </FocusablePressable>
+                <FocusablePressable
+                  style={styles.linkButton}
+                  focusedStyle={styles.linkButtonFocused}
                   onPress={() => setView("terms")}
                 >
-                  보기
-                </Text>
-              </FocusablePressable>
+                  <Text variant="caption" color="#6366f1">보기</Text>
+                </FocusablePressable>
+              </View>
 
-              <FocusablePressable
-                style={styles.checkboxRow}
-                focusedStyle={styles.checkboxRowFocused}
-                onPress={() => {
-                  setAgreedPrivacy(!agreedPrivacy);
-                  clearError("agree");
-                }}
-              >
-                <View
-                  style={[styles.checkbox, agreedPrivacy && styles.checkboxChecked]}
+              <View style={styles.checkboxRow}>
+                <FocusablePressable
+                  style={styles.checkboxInline}
+                  focusedStyle={styles.checkboxRowFocused}
+                  onPress={() => {
+                    setAgreedPrivacy(!agreedPrivacy);
+                    clearError("agree");
+                  }}
                 >
-                  {agreedPrivacy && (
-                    <Text variant="caption" color="#fff">✓</Text>
-                  )}
-                </View>
-                <Text variant="caption" style={{ flex: 1 }}>
-                  개인정보처리방침 동의 (필수)
-                </Text>
-                <Text
-                  variant="caption"
-                  color="#6366f1"
+                  <View
+                    style={[styles.checkbox, agreedPrivacy && styles.checkboxChecked]}
+                  >
+                    {agreedPrivacy && (
+                      <Text variant="caption" color="#fff">✓</Text>
+                    )}
+                  </View>
+                  <Text variant="caption">개인정보처리방침 동의 (필수)</Text>
+                </FocusablePressable>
+                <FocusablePressable
+                  style={styles.linkButton}
+                  focusedStyle={styles.linkButtonFocused}
                   onPress={() => setView("privacy")}
                 >
-                  보기
-                </Text>
-              </FocusablePressable>
+                  <Text variant="caption" color="#6366f1">보기</Text>
+                </FocusablePressable>
+              </View>
 
               {errors.agree ? (
                 <Text variant="caption" color="#ff453a" style={{ marginTop: 8 }}>
@@ -453,8 +453,24 @@ function FocusablePressable({
   children: React.ReactNode;
 }) {
   const [focused, setFocused] = useState(false);
+  const ref = useRef<View>(null);
+
+  useEffect(() => {
+    if (Platform.OS !== "web" || !ref.current) return;
+    const el = ref.current as unknown as HTMLElement;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === " ") {
+        e.preventDefault();
+        onPress();
+      }
+    };
+    el.addEventListener("keydown", handler);
+    return () => el.removeEventListener("keydown", handler);
+  }, [onPress]);
+
   return (
     <Pressable
+      ref={ref}
       onPress={onPress}
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}
@@ -472,6 +488,12 @@ const styles = StyleSheet.create({
   checkboxRow: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
+  },
+  checkboxInline: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
     paddingVertical: 10,
     paddingHorizontal: 8,
     gap: 12,
@@ -480,6 +502,16 @@ const styles = StyleSheet.create({
     borderColor: "transparent",
   },
   checkboxRowFocused: {
+    borderColor: "#6366f1",
+  },
+  linkButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: "transparent",
+  },
+  linkButtonFocused: {
     borderColor: "#6366f1",
   },
   checkbox: {
