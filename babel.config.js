@@ -13,6 +13,7 @@ module.exports = function (api) {
             "@providers": "./src/providers",
             "@services": "./src/services",
             "@features": "./src/features",
+            "@app-types": "./src/types",
           },
         },
       ],

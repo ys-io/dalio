@@ -5,6 +5,7 @@ import { supabase } from "@services/supabase";
 import { Button, TextInput, Text, Screen, Body } from "@ys-io/ui";
 import { useAutoFocus } from "@hooks/common/useAutoFocus";
 import { MSG } from "@constans/messages";
+import type { ForgotPasswordStep } from "@app-types/auth";
 import { OtpScreen } from "@features/auth/screens/otp/OtpScreen";
 import { ResetPasswordScreen } from "./ResetPasswordScreen";
 
@@ -12,14 +13,12 @@ interface Props {
   onBack: () => void;
 }
 
-type Step = "email" | "otp" | "reset" | "done";
-
 export function ForgotPasswordScreen({ onBack }: Props) {
   const { pauseAuthListener, resumeAuthListener, signOut } = useAuth();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [step, setStep] = useState<Step>("email");
+  const [step, setStep] = useState<ForgotPasswordStep>("email");
   const emailRef = useRef<RNTextInput>(null);
 
   useAutoFocus(emailRef);

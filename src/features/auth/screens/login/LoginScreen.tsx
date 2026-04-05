@@ -7,20 +7,19 @@ import { TermsAgreement } from "@features/auth/components/form/TermsAgreement";
 import { useFormErrors } from "@hooks/common/useFormErrors";
 import { useLoginHandler } from "@hooks/auth/useLoginHandler";
 import { FOCUS_DELAY } from "@constans/time";
+import type { LoginViewType } from "@app-types/auth";
 import { OtpScreen } from "@features/auth/screens/otp/OtpScreen";
 import { ForgotPasswordScreen } from "@features/auth/screens/password/ForgotPasswordScreen";
 import { TermsScreen } from "@features/auth/screens/legal/TermsScreen";
 import { PrivacyScreen } from "@features/auth/screens/legal/PrivacyScreen";
 import { styles } from "./LoginScreen.styles";
 
-type ViewType = "login" | "signup" | "signupOtp" | "forgotPassword" | "terms" | "privacy";
-
 export function LoginScreen() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
-  const [view, setView] = useState<ViewType>("login");
+  const [view, setView] = useState<LoginViewType>("login");
   const [agreedTerms, setAgreedTerms] = useState(false);
   const [agreedPrivacy, setAgreedPrivacy] = useState(false);
   const [loading, setLoading] = useState(false);

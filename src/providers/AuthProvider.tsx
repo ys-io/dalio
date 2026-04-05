@@ -9,16 +9,9 @@ import {
 } from "react";
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "@services/supabase";
+import type { AuthUser, AuthProviderType } from "@app-types/auth";
 
-type Provider = "email" | "google";
-
-interface AuthUser {
-  id: string;
-  email: string | null;
-  provider: Provider;
-  displayName: string | null;
-  avatarUrl: string | null;
-}
+export type { AuthUser };
 
 interface AuthContextValue {
   user: AuthUser | null;
@@ -32,7 +25,7 @@ interface AuthContextValue {
 }
 
 function mapUser(user: User): AuthUser {
-  const provider = (user.app_metadata?.provider ?? "email") as Provider;
+  const provider = (user.app_metadata?.provider ?? "email") as AuthProviderType;
   return {
     id: user.id,
     email: user.email ?? null,

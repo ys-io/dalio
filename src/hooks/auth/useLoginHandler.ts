@@ -5,34 +5,12 @@ import { signUpSchema } from "@features/auth/lib/validations";
 import { apiCall, validate } from "@ys-io/utils";
 import { supabase } from "@services/supabase";
 import { MSG } from "@constans/messages";
-
-interface Refs {
-  nameRef: React.RefObject<any>;
-  emailRef: React.RefObject<any>;
-  passwordRef: React.RefObject<any>;
-  passwordConfirmRef: React.RefObject<any>;
-}
-
-interface FormState {
-  name: string;
-  email: string;
-  password: string;
-  passwordConfirm: string;
-  agreedTerms: boolean;
-  agreedPrivacy: boolean;
-}
-
-interface Handlers {
-  setErrors: (errors: Record<string, string>) => void;
-  resetErrors: () => void;
-  setLoading: (loading: boolean) => void;
-  setView: (view: string) => void;
-}
+import type { LoginFormState, LoginFormRefs, LoginFormHandlers } from "@app-types/auth";
 
 export function useLoginHandler(
-  form: FormState,
-  refs: Refs,
-  handlers: Handlers,
+  form: LoginFormState,
+  refs: LoginFormRefs,
+  handlers: LoginFormHandlers,
 ) {
   const { signInWithEmail, signUpWithEmail } = useAuth();
 
