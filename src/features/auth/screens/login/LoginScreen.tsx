@@ -1,9 +1,14 @@
 import { useRef, useState } from "react";
 import { TextInput as RNTextInput } from "react-native";
-import { Button, TextInput, Text, Screen, Body, Divider } from "@ys-io/ui";
-import { GoogleIcon } from "@features/auth/components/icons/GoogleIcon";
+import { Button, Screen, Body } from "@ys-io/ui";
+import { NameInput } from "@features/auth/components/inputs/NameInput";
+import { EmailInput } from "@features/auth/components/inputs/EmailInput";
+import { PasswordInput } from "@features/auth/components/inputs/PasswordInput";
 import { PasswordStrength } from "@features/auth/components/form/PasswordStrength";
 import { TermsAgreement } from "@features/auth/components/form/TermsAgreement";
+import { LoginHeader } from "@features/auth/components/sections/LoginHeader";
+import { LoginActions } from "@features/auth/components/sections/LoginActions";
+import { SignupActions } from "@features/auth/components/sections/SignupActions";
 import { useFormErrors } from "@hooks/common/useFormErrors";
 import { useLoginHandler } from "@hooks/auth/useLoginHandler";
 import { FOCUS_DELAY } from "@constans/time";
@@ -33,7 +38,12 @@ export function LoginScreen() {
   const { handleSignup, handleLogin, handleGoogleLogin } = useLoginHandler(
     { name, email, password, passwordConfirm, agreedTerms, agreedPrivacy },
     { nameRef, emailRef, passwordRef, passwordConfirmRef },
-    { setErrors, resetErrors, setLoading, setView: setView as (v: string) => void },
+    {
+      setErrors,
+      resetErrors,
+      setLoading,
+      setView: setView as (v: string) => void,
+    },
   );
 
   const resetForm = () => {
@@ -49,12 +59,9 @@ export function LoginScreen() {
 
   // --- Sub views ---
 
-  if (view === "terms") {
-    return <TermsScreen onBack={() => setView("signup")} />;
-  }
-  if (view === "privacy") {
+  if (view === "terms") return <TermsScreen onBack={() => setView("signup")} />;
+  if (view === "privacy")
     return <PrivacyScreen onBack={() => setView("signup")} />;
-  }
   if (view === "signupOtp") {
     return (
       <OtpScreen
@@ -65,68 +72,65 @@ export function LoginScreen() {
       />
     );
   }
-  if (view === "forgotPassword") {
+  if (view === "forgotPassword")
     return <ForgotPasswordScreen onBack={() => setView("login")} />;
-  }
 
   // --- Main form ---
 
   return (
     <Screen scroll>
       <Body centered>
-        <Text variant="title" align="center" style={styles.title}>
-          📅 Dalio
-        </Text>
-        <Text variant="subtitle" align="center" style={styles.subtitle}>
-          친구들과 일정을 공유하고{"\n"}함께 계획을 세워보세요
-        </Text>
+        <LoginHeader />
 
         {view === "signup" && (
           <>
-            <TextInput
+            <NameInput
               ref={nameRef}
-              label="이름"
-              placeholder="홍길동"
               value={name}
-              onChangeText={(v) => { setName(v); clearError("name"); }}
-              onSubmitEditing={handleSubmit}
+              onChange={(v) => {
+                setName(v);
+                clearError("name");
+              }}
+              onSubmit={handleSubmit}
               error={errors.name}
-              containerStyle={styles.fieldMargin}
+              style={styles.fieldMargin}
             />
-            <TextInput
+            <EmailInput
               ref={emailRef}
-              label="이메일"
-              placeholder="example@email.com"
               value={email}
-              onChangeText={(v) => { setEmail(v); clearError("email"); }}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              onSubmitEditing={handleSubmit}
+              onChange={(v) => {
+                setEmail(v);
+                clearError("email");
+              }}
+              onSubmit={handleSubmit}
               error={errors.email}
-              containerStyle={styles.fieldMargin}
+              style={styles.fieldMargin}
             />
-            <TextInput
+            <PasswordInput
               ref={passwordRef}
-              label="비밀번호"
-              placeholder="8자 이상, 대문자·특수문자 포함"
               value={password}
-              onChangeText={(v) => { setPassword(v); clearError("password"); }}
-              secureTextEntry
-              onSubmitEditing={handleSubmit}
+              onChange={(v) => {
+                setPassword(v);
+                clearError("password");
+              }}
+              onSubmit={handleSubmit}
               error={errors.password}
-              containerStyle={styles.fieldMarginSmall}
+              placeholder="8자 이상, 대문자·특수문자 포함"
+              style={styles.fieldMarginSmall}
             />
             <PasswordStrength password={password} />
-            <TextInput
+            <PasswordInput
               ref={passwordConfirmRef}
+              value={passwordConfirm}
+              onChange={(v) => {
+                setPasswordConfirm(v);
+                clearError("passwordConfirm");
+              }}
+              onSubmit={handleSubmit}
+              error={errors.passwordConfirm}
               label="비밀번호 확인"
               placeholder="비밀번호를 다시 입력하세요"
-              value={passwordConfirm}
-              onChangeText={(v) => { setPasswordConfirm(v); clearError("passwordConfirm"); }}
-              secureTextEntry
-              onSubmitEditing={handleSubmit}
-              error={errors.passwordConfirm}
-              containerStyle={styles.fieldMargin}
+              style={styles.fieldMargin}
             />
             <TermsAgreement
               agreedTerms={agreedTerms}
@@ -137,8 +141,14 @@ export function LoginScreen() {
                 setAgreedPrivacy(next);
                 clearError("agree");
               }}
-              onToggleTerms={() => { setAgreedTerms(!agreedTerms); clearError("agree"); }}
-              onTogglePrivacy={() => { setAgreedPrivacy(!agreedPrivacy); clearError("agree"); }}
+              onToggleTerms={() => {
+                setAgreedTerms(!agreedTerms);
+                clearError("agree");
+              }}
+              onTogglePrivacy={() => {
+                setAgreedPrivacy(!agreedPrivacy);
+                clearError("agree");
+              }}
               onViewTerms={() => setView("terms")}
               onViewPrivacy={() => setView("privacy")}
               error={errors.agree}
@@ -148,28 +158,27 @@ export function LoginScreen() {
 
         {view === "login" && (
           <>
-            <TextInput
+            <EmailInput
               ref={emailRef}
-              label="이메일"
-              placeholder="example@email.com"
               value={email}
-              onChangeText={(v) => { setEmail(v); clearError("email"); }}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              onSubmitEditing={handleSubmit}
+              onChange={(v) => {
+                setEmail(v);
+                clearError("email");
+              }}
+              onSubmit={handleSubmit}
               error={errors.email}
-              containerStyle={styles.fieldMargin}
+              style={styles.fieldMargin}
             />
-            <TextInput
+            <PasswordInput
               ref={passwordRef}
-              label="비밀번호"
-              placeholder="비밀번호를 입력하세요"
               value={password}
-              onChangeText={(v) => { setPassword(v); clearError("password"); }}
-              secureTextEntry
-              onSubmitEditing={handleSubmit}
+              onChange={(v) => {
+                setPassword(v);
+                clearError("password");
+              }}
+              onSubmit={handleSubmit}
               error={errors.password}
-              containerStyle={styles.fieldMargin}
+              style={styles.fieldMargin}
             />
           </>
         )}
@@ -184,43 +193,24 @@ export function LoginScreen() {
         />
 
         {view === "signup" ? (
-          <Button
-            title="로그인으로 돌아가기"
-            onPress={() => { setView("login"); resetForm(); }}
-            disabled={loading}
-            variant="secondary"
-            style={styles.buttonMarginLarge}
+          <SignupActions
+            loading={loading}
+            onBack={() => {
+              setView("login");
+              resetForm();
+            }}
           />
         ) : (
-          <>
-            <Button
-              title="비밀번호를 잊으셨나요?"
-              onPress={() => setView("forgotPassword")}
-              disabled={loading}
-              variant="secondary"
-              style={styles.buttonMargin}
-            />
-            <Divider label="또는" />
-            <Button
-              title="Google로 계속하기"
-              onPress={handleGoogleLogin}
-              disabled={loading}
-              variant="secondary"
-              icon={<GoogleIcon />}
-              style={styles.buttonMargin}
-            />
-            <Button
-              title="회원가입"
-              onPress={() => {
-                setView("signup");
-                resetForm();
-                setTimeout(() => nameRef.current?.focus(), FOCUS_DELAY);
-              }}
-              disabled={loading}
-              variant="secondary"
-              style={styles.buttonMarginLarge}
-            />
-          </>
+          <LoginActions
+            loading={loading}
+            onForgotPassword={() => setView("forgotPassword")}
+            onGoogleLogin={handleGoogleLogin}
+            onSignup={() => {
+              setView("signup");
+              resetForm();
+              setTimeout(() => nameRef.current?.focus(), FOCUS_DELAY);
+            }}
+          />
         )}
       </Body>
     </Screen>

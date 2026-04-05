@@ -1,13 +1,10 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
-  fieldMargin: {
-    marginBottom: 16,
-  },
-  fieldMarginSmall: {
-    marginBottom: 4,
-  },
   buttonMargin: {
     marginBottom: 12,
+  },
+  buttonMarginLarge: {
+    marginBottom: 16,
   },
 });
