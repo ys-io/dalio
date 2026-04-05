@@ -1,34 +1,34 @@
 import * as yup from "yup";
-
-const SPECIAL_CHAR_REGEX = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+import { MSG } from "@constans/messages";
+import { SPECIAL_CHAR_REGEX, PASSWORD_MIN_LENGTH } from "@constans/password";
 
 export const passwordRules = yup
   .string()
-  .required("비밀번호를 입력해주세요.")
-  .min(8, "비밀번호는 8자 이상이어야 합니다.")
-  .matches(/[A-Z]/, "대문자를 포함해야 합니다.")
-  .matches(SPECIAL_CHAR_REGEX, "특수문자를 포함해야 합니다.");
+  .required(MSG.V_PASSWORD_REQUIRED)
+  .min(PASSWORD_MIN_LENGTH, MSG.V_PASSWORD_MIN)
+  .matches(/[A-Z]/, MSG.V_PASSWORD_UPPERCASE)
+  .matches(SPECIAL_CHAR_REGEX, MSG.V_PASSWORD_SPECIAL);
 
 export const resetPasswordSchema = yup.object({
   password: passwordRules,
   passwordConfirm: yup
     .string()
-    .required("비밀번호를 다시 입력해주세요.")
-    .oneOf([yup.ref("password")], "비밀번호가 일치하지 않습니다."),
+    .required(MSG.V_PASSWORD_CONFIRM_REQUIRED)
+    .oneOf([yup.ref("password")], MSG.V_PASSWORD_CONFIRM_MATCH),
 });
 
 export const signUpSchema = yup.object({
   name: yup
     .string()
-    .required("이름을 입력해주세요.")
-    .min(2, "이름은 2자 이상이어야 합니다."),
+    .required(MSG.V_NAME_REQUIRED)
+    .min(2, MSG.V_NAME_MIN),
   email: yup
     .string()
-    .required("이메일을 입력해주세요.")
-    .email("올바른 이메일 형식이 아닙니다."),
+    .required(MSG.V_EMAIL_REQUIRED)
+    .email(MSG.V_EMAIL_INVALID),
   password: passwordRules,
   passwordConfirm: yup
     .string()
-    .required("비밀번호를 다시 입력해주세요.")
-    .oneOf([yup.ref("password")], "비밀번호가 일치하지 않습니다."),
+    .required(MSG.V_PASSWORD_CONFIRM_REQUIRED)
+    .oneOf([yup.ref("password")], MSG.V_PASSWORD_CONFIRM_MATCH),
 });

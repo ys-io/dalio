@@ -42,6 +42,23 @@ export const MSG = {
   OTP_INVALID: "인증 코드가 올바르지 않습니다.",
   RESEND_FAILED: "재전송에 실패했습니다. 인터넷 연결을 확인해주세요.",
 
+  // ─── 유효성 검사 ──────────────────────────────
+  V_NAME_REQUIRED: "이름을 입력해주세요.",
+  V_NAME_MIN: "이름은 2자 이상이어야 합니다.",
+  V_EMAIL_REQUIRED: "이메일을 입력해주세요.",
+  V_EMAIL_INVALID: "올바른 이메일 형식이 아닙니다.",
+  V_PASSWORD_REQUIRED: "비밀번호를 입력해주세요.",
+  V_PASSWORD_MIN: "비밀번호는 8자 이상이어야 합니다.",
+  V_PASSWORD_UPPERCASE: "대문자를 포함해야 합니다.",
+  V_PASSWORD_SPECIAL: "특수문자를 포함해야 합니다.",
+  V_PASSWORD_CONFIRM_REQUIRED: "비밀번호를 다시 입력해주세요.",
+  V_PASSWORD_CONFIRM_MATCH: "비밀번호가 일치하지 않습니다.",
+
+  // ─── 비밀번호 강도 라벨 ────────────────────────
+  PW_RULE_MIN: "8자 이상",
+  PW_RULE_UPPERCASE: "대문자 포함",
+  PW_RULE_SPECIAL: "특수문자 포함",
+
   // ─── 타이머 ────────────────────────────────────
   TIMER_EXPIRED: "만료됨",
 
