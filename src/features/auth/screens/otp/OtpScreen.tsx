@@ -5,6 +5,7 @@ import { useOtpTimer } from "@hooks/auth/useOtpTimer";
 import { useOtpInput } from "@hooks/auth/useOtpInput";
 import { COLORS } from "@constans/colors";
 import { MSG } from "@constans/messages";
+import { OTP_TYPE } from "@constans/views";
 import { styles } from "./OtpScreen.styles";
 
 interface Props {
@@ -27,7 +28,7 @@ export function OtpScreen({ email, type, onVerified, onBack }: Props) {
       const { error: verifyError } = await supabase.auth.verifyOtp({
         email,
         token,
-        type: type === "signup" ? "signup" : "recovery",
+        type: type === OTP_TYPE.SIGNUP ? OTP_TYPE.SIGNUP : OTP_TYPE.RECOVERY,
       });
 
       if (verifyError) {
@@ -54,8 +55,8 @@ export function OtpScreen({ email, type, onVerified, onBack }: Props) {
   const handleResend = async () => {
     setError("");
     try {
-      if (type === "signup") {
-        await supabase.auth.resend({ type: "signup", email });
+      if (type === OTP_TYPE.SIGNUP) {
+        await supabase.auth.resend({ type: OTP_TYPE.SIGNUP, email });
       } else {
         await supabase.auth.resetPasswordForEmail(email);
       }

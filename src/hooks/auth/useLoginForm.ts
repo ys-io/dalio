@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { TextInput as RNTextInput } from "react-native";
 import { useFormErrors } from "@hooks/common/useFormErrors";
 import { useLoginHandler } from "@hooks/auth/useLoginHandler";
+import { LOGIN_VIEW } from "@constans/views";
 import type { LoginViewType } from "@app-types/auth";
 
 export function useLoginForm() {
@@ -9,7 +10,7 @@ export function useLoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
-  const [view, setView] = useState<LoginViewType>("login");
+  const [view, setView] = useState<LoginViewType>(LOGIN_VIEW.LOGIN);
   const [agreedTerms, setAgreedTerms] = useState(false);
   const [agreedPrivacy, setAgreedPrivacy] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -35,7 +36,7 @@ export function useLoginForm() {
     setAgreedPrivacy(false);
   };
 
-  const handleSubmit = view === "signup" ? handleSignup : handleLogin;
+  const handleSubmit = view === LOGIN_VIEW.SIGNUP ? handleSignup : handleLogin;
 
   return {
     // form values

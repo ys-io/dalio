@@ -9,6 +9,7 @@ import { LoginActions } from "@features/auth/components/sections/LoginActions";
 import { SignupActions } from "@features/auth/components/sections/SignupActions";
 import { useLoginForm } from "@hooks/auth/useLoginForm";
 import { FOCUS_DELAY } from "@constans/time";
+import { LOGIN_VIEW, OTP_TYPE } from "@constans/views";
 import { MSG } from "@constans/messages";
 import { OtpScreen } from "@features/auth/screens/otp/OtpScreen";
 import { ForgotPasswordScreen } from "@features/auth/screens/password/ForgotPasswordScreen";
@@ -46,21 +47,21 @@ export function LoginScreen() {
 
   // --- Sub views ---
 
-  if (view === "terms") return <TermsScreen onBack={() => setView("signup")} />;
-  if (view === "privacy")
-    return <PrivacyScreen onBack={() => setView("signup")} />;
-  if (view === "signupOtp") {
+  if (view === LOGIN_VIEW.TERMS) return <TermsScreen onBack={() => setView(LOGIN_VIEW.SIGNUP)} />;
+  if (view === LOGIN_VIEW.PRIVACY)
+    return <PrivacyScreen onBack={() => setView(LOGIN_VIEW.SIGNUP)} />;
+  if (view === LOGIN_VIEW.SIGNUP_OTP) {
     return (
       <OtpScreen
         email={email}
-        type="signup"
+        type={OTP_TYPE.SIGNUP}
         onVerified={() => {}}
-        onBack={() => setView("signup")}
+        onBack={() => setView(LOGIN_VIEW.SIGNUP)}
       />
     );
   }
-  if (view === "forgotPassword")
-    return <ForgotPasswordScreen onBack={() => setView("login")} />;
+  if (view === LOGIN_VIEW.FORGOT_PASSWORD)
+    return <ForgotPasswordScreen onBack={() => setView(LOGIN_VIEW.LOGIN)} />;
 
   // --- Main form ---
 
@@ -69,7 +70,7 @@ export function LoginScreen() {
       <Body centered>
         <LoginHeader />
 
-        {view === "signup" && (
+        {view === LOGIN_VIEW.SIGNUP && (
           <>
             <NameInput
               ref={nameRef}
@@ -136,14 +137,14 @@ export function LoginScreen() {
                 setAgreedPrivacy(!agreedPrivacy);
                 clearError("agree");
               }}
-              onViewTerms={() => setView("terms")}
-              onViewPrivacy={() => setView("privacy")}
+              onViewTerms={() => setView(LOGIN_VIEW.TERMS)}
+              onViewPrivacy={() => setView(LOGIN_VIEW.PRIVACY)}
               error={errors.agree}
             />
           </>
         )}
 
-        {view === "login" && (
+        {view === LOGIN_VIEW.LOGIN && (
           <>
             <EmailInput
               ref={emailRef}
@@ -171,7 +172,7 @@ export function LoginScreen() {
         )}
 
         <Button
-          title={view === "signup" ? MSG.BTN_SIGNUP_SUBMIT : MSG.BTN_LOGIN}
+          title={view === LOGIN_VIEW.SIGNUP ? MSG.BTN_SIGNUP_SUBMIT : MSG.BTN_LOGIN}
           onPress={handleSubmit}
           disabled={loading}
           loading={loading}
@@ -179,21 +180,21 @@ export function LoginScreen() {
           style={styles.buttonMargin}
         />
 
-        {view === "signup" ? (
+        {view === LOGIN_VIEW.SIGNUP ? (
           <SignupActions
             loading={loading}
             onBack={() => {
-              setView("login");
+              setView(LOGIN_VIEW.LOGIN);
               resetForm();
             }}
           />
         ) : (
           <LoginActions
             loading={loading}
-            onForgotPassword={() => setView("forgotPassword")}
+            onForgotPassword={() => setView(LOGIN_VIEW.FORGOT_PASSWORD)}
             onGoogleLogin={handleGoogleLogin}
             onSignup={() => {
-              setView("signup");
+              setView(LOGIN_VIEW.SIGNUP);
               resetForm();
               setTimeout(() => nameRef.current?.focus(), FOCUS_DELAY);
             }}

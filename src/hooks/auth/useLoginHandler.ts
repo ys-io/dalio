@@ -5,6 +5,7 @@ import { signUpSchema } from "@features/auth/lib/validations";
 import { apiCall, validate } from "@ys-io/utils";
 import { supabase } from "@services/supabase";
 import { MSG } from "@constans/messages";
+import { LOGIN_VIEW } from "@constans/views";
 import type { LoginFormState, LoginFormRefs, LoginFormHandlers } from "@app-types/auth";
 
 export function useLoginHandler(
@@ -56,7 +57,7 @@ export function useLoginHandler(
         handlers.setErrors({ email: error });
         refs.emailRef.current?.focus();
       } else {
-        handlers.setView("signupOtp");
+        handlers.setView(LOGIN_VIEW.SIGNUP_OTP);
       }
     } catch {
       handlers.setErrors({ email: MSG.NETWORK_ERROR });

@@ -5,6 +5,7 @@ import { supabase } from "@services/supabase";
 import { Button, TextInput, Text, Screen, Body } from "@ys-io/ui";
 import { useAutoFocus } from "@hooks/common/useAutoFocus";
 import { MSG } from "@constans/messages";
+import { FORGOT_PASSWORD_STEP, OTP_TYPE } from "@constans/views";
 import type { ForgotPasswordStep } from "@app-types/auth";
 import { OtpScreen } from "@features/auth/screens/otp/OtpScreen";
 import { ResetPasswordScreen } from "./ResetPasswordScreen";
@@ -18,7 +19,7 @@ export function ForgotPasswordScreen({ onBack }: Props) {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [step, setStep] = useState<ForgotPasswordStep>("email");
+  const [step, setStep] = useState<ForgotPasswordStep>(FORGOT_PASSWORD_STEP.EMAIL);
   const emailRef = useRef<RNTextInput>(null);
 
   useAutoFocus(emailRef);
@@ -53,7 +54,7 @@ export function ForgotPasswordScreen({ onBack }: Props) {
         emailRef.current?.focus();
       } else {
         pauseAuthListener();
-        setStep("otp");
+        setStep(FORGOT_PASSWORD_STEP.OTP);
       }
     } catch {
       setError(MSG.NETWORK_ERROR);
@@ -61,34 +62,34 @@ export function ForgotPasswordScreen({ onBack }: Props) {
     setLoading(false);
   };
 
-  if (step === "otp") {
+  if (step === FORGOT_PASSWORD_STEP.OTP) {
     return (
       <OtpScreen
         email={email}
-        type="recovery"
-        onVerified={() => setStep("reset")}
+        type={OTP_TYPE.RECOVERY}
+        onVerified={() => setStep(FORGOT_PASSWORD_STEP.RESET)}
         onBack={async () => {
           try { await signOut(); } catch {}
           resumeAuthListener();
-          setStep("email");
+          setStep(FORGOT_PASSWORD_STEP.EMAIL);
         }}
       />
     );
   }
 
-  if (step === "reset") {
+  if (step === FORGOT_PASSWORD_STEP.RESET) {
     return (
       <ResetPasswordScreen
         onComplete={async () => {
           try { await signOut(); } catch {}
           resumeAuthListener();
-          setStep("done");
+          setStep(FORGOT_PASSWORD_STEP.DONE);
         }}
       />
     );
   }
 
-  if (step === "done") {
+  if (step === FORGOT_PASSWORD_STEP.DONE) {
     return (
       <Screen>
         <Body centered>

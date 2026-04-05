@@ -1,3 +1,5 @@
+import type { LOGIN_VIEW, FORGOT_PASSWORD_STEP } from "@constans/views";
+
 export type AuthProviderType = "email" | "google";
 
 export interface AuthUser {
@@ -8,15 +10,9 @@ export interface AuthUser {
   avatarUrl: string | null;
 }
 
-export type LoginViewType =
-  | "login"
-  | "signup"
-  | "signupOtp"
-  | "forgotPassword"
-  | "terms"
-  | "privacy";
+export type LoginViewType = (typeof LOGIN_VIEW)[keyof typeof LOGIN_VIEW];
 
-export type ForgotPasswordStep = "email" | "otp" | "reset" | "done";
+export type ForgotPasswordStep = (typeof FORGOT_PASSWORD_STEP)[keyof typeof FORGOT_PASSWORD_STEP];
 
 export interface LoginFormState {
   name: string;
