@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useCallback } from "react";
 import { TextInput as RNTextInput, View, Pressable, StyleSheet } from "react-native";
 import { useAuth } from "../providers/AuthProvider";
 import { signInWithGoogle } from "../lib/social-auth";
@@ -258,8 +258,9 @@ export function LoginScreen() {
             />
 
             <View style={styles.checkboxGroup}>
-              <Pressable
+              <FocusablePressable
                 style={styles.checkboxRow}
+                focusedStyle={styles.checkboxRowFocused}
                 onPress={() => {
                   const next = !agreedTerms || !agreedPrivacy;
                   setAgreedTerms(next);
@@ -280,12 +281,13 @@ export function LoginScreen() {
                 <Text variant="body" style={{ fontSize: 14 }}>
                   전체 동의
                 </Text>
-              </Pressable>
+              </FocusablePressable>
 
               <View style={styles.dividerThin} />
 
-              <Pressable
+              <FocusablePressable
                 style={styles.checkboxRow}
+                focusedStyle={styles.checkboxRowFocused}
                 onPress={() => {
                   setAgreedTerms(!agreedTerms);
                   clearError("agree");
@@ -308,10 +310,11 @@ export function LoginScreen() {
                 >
                   보기
                 </Text>
-              </Pressable>
+              </FocusablePressable>
 
-              <Pressable
+              <FocusablePressable
                 style={styles.checkboxRow}
+                focusedStyle={styles.checkboxRowFocused}
                 onPress={() => {
                   setAgreedPrivacy(!agreedPrivacy);
                   clearError("agree");
@@ -334,7 +337,7 @@ export function LoginScreen() {
                 >
                   보기
                 </Text>
-              </Pressable>
+              </FocusablePressable>
 
               {errors.agree ? (
                 <Text variant="caption" color="#ff453a" style={{ marginTop: 8 }}>
@@ -438,6 +441,30 @@ export function LoginScreen() {
   );
 }
 
+function FocusablePressable({
+  onPress,
+  style: baseStyle,
+  focusedStyle,
+  children,
+}: {
+  onPress: () => void;
+  style: any;
+  focusedStyle: any;
+  children: React.ReactNode;
+}) {
+  const [focused, setFocused] = useState(false);
+  return (
+    <Pressable
+      onPress={onPress}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
+      style={[baseStyle, focused && focusedStyle]}
+    >
+      {children}
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   checkboxGroup: {
     marginBottom: 24,
@@ -446,7 +473,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 10,
+    paddingHorizontal: 8,
     gap: 12,
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: "transparent",
+  },
+  checkboxRowFocused: {
+    borderColor: "#6366f1",
   },
   checkbox: {
     width: 22,
