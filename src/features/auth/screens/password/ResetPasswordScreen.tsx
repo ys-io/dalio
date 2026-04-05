@@ -1,12 +1,7 @@
-import { useRef, useState } from "react";
-import { TextInput as RNTextInput } from "react-native";
 import { Button, TextInput, Text, Screen, Body } from "@ys-io/ui";
-import { validate } from "@ys-io/utils";
-import { supabase } from "@services/supabase";
-import { resetPasswordSchema } from "@features/auth/lib/validations";
-import { useFormErrors } from "@hooks/common/useFormErrors";
 import { PasswordStrength } from "@features/auth/components/form/PasswordStrength";
 import { MSG } from "@constans/messages";
+import { useResetPasswordForm } from "@hooks/auth/useResetPasswordForm";
 import { styles } from "./ResetPasswordScreen.styles";
 
 interface Props {
@@ -14,37 +9,14 @@ interface Props {
 }
 
 export function ResetPasswordScreen({ onComplete }: Props) {
-  const [password, setPassword] = useState("");
-  const [passwordConfirm, setPasswordConfirm] = useState("");
-  const [loading, setLoading] = useState(false);
-  const { errors, setErrors, clearError } = useFormErrors();
-
-  const passwordRef = useRef<RNTextInput>(null);
-  const confirmRef = useRef<RNTextInput>(null);
-
-  const handleSubmit = async () => {
-    const { errors: validationErrors } = await validate(resetPasswordSchema, {
-      password,
-      passwordConfirm,
-    });
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      if (validationErrors.password) passwordRef.current?.focus();
-      else if (validationErrors.passwordConfirm) confirmRef.current?.focus();
-      return;
-    }
-
-    setErrors({});
-    setLoading(true);
-    const { error } = await supabase.auth.updateUser({ password });
-    if (error) {
-      setErrors({ password: error.message });
-      passwordRef.current?.focus();
-    } else {
-      await onComplete();
-    }
-    setLoading(false);
-  };
+  const {
+    password, setPassword,
+    passwordConfirm, setPasswordConfirm,
+    loading,
+    errors, clearError,
+    passwordRef, confirmRef,
+    handleSubmit,
+  } = useResetPasswordForm(onComplete);
 
   return (
     <Screen>
