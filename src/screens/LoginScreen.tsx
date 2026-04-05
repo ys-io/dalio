@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState, useCallback } from "react";
-import { TextInput as RNTextInput, View, Pressable, Platform } from "react-native";
-import { styles } from "./LoginScreen.styles";
+import { useRef, useState } from "react";
+import { TextInput as RNTextInput, View } from "react-native";
 import { useAuth } from "../providers/AuthProvider";
 import { signInWithGoogle } from "../lib/social-auth";
 import { signUpSchema } from "../lib/validations";
@@ -9,10 +8,15 @@ import { supabase } from "../lib/supabase";
 import { Button, TextInput, Text, Screen, Body, Divider } from "@ys-io/ui";
 import { GoogleIcon } from "../components/GoogleIcon";
 import { PasswordStrength } from "../components/PasswordStrength";
+import { FocusablePressable } from "../components/FocusablePressable";
+import { useFormErrors } from "../hooks/useFormErrors";
+import { FOCUS_DELAY, COLORS } from "../constans";
+import { MSG } from "../constans/messages";
 import { OtpScreen } from "./OtpScreen";
 import { ForgotPasswordScreen } from "./ForgotPasswordScreen";
 import { TermsScreen } from "./TermsScreen";
 import { PrivacyScreen } from "./PrivacyScreen";
+import { styles } from "./LoginScreen.styles";
 
 type ViewType = "login" | "signup" | "signupOtp" | "forgotPassword" | "terms" | "privacy";
 
@@ -26,23 +30,15 @@ export function LoginScreen() {
   const [agreedTerms, setAgreedTerms] = useState(false);
   const [agreedPrivacy, setAgreedPrivacy] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const { errors, setErrors, clearError, resetErrors } = useFormErrors();
 
   const nameRef = useRef<RNTextInput>(null);
   const emailRef = useRef<RNTextInput>(null);
   const passwordRef = useRef<RNTextInput>(null);
   const passwordConfirmRef = useRef<RNTextInput>(null);
 
-  const clearError = (field: string) => {
-    setErrors((prev) => {
-      const next = { ...prev };
-      delete next[field];
-      return next;
-    });
-  };
-
   const resetForm = () => {
-    setErrors({});
+    resetErrors();
     setName("");
     setPassword("");
     setPasswordConfirm("");
@@ -59,7 +55,7 @@ export function LoginScreen() {
         passwordConfirm,
       });
       if (!agreedTerms || !agreedPrivacy) {
-        validationErrors.agree = "이용약관과 개인정보처리방침에 동의해주세요.";
+        validationErrors.agree = MSG.AGREE_REQUIRED;
       }
 
       if (Object.keys(validationErrors).length > 0) {
@@ -72,16 +68,15 @@ export function LoginScreen() {
         return;
       }
 
-      setErrors({});
+      resetErrors();
       setLoading(true);
 
       try {
-        // 이미 가입된 이메일인지 체크
         const { data: exists } = await supabase.rpc("check_email_registered", {
           target_email: email,
         });
         if (exists) {
-          setErrors({ email: "이미 가입된 이메일입니다." });
+          setErrors({ email: MSG.EMAIL_ALREADY_REGISTERED });
           emailRef.current?.focus();
           setLoading(false);
           return;
@@ -97,7 +92,7 @@ export function LoginScreen() {
           setView("signupOtp");
         }
       } catch {
-        setErrors({ email: "네트워크 오류가 발생했습니다. 인터넷 연결을 확인해주세요." });
+        setErrors({ email: MSG.NETWORK_ERROR });
       }
       setLoading(false);
       return;
@@ -105,17 +100,17 @@ export function LoginScreen() {
 
     // login
     if (!email) {
-      setErrors({ email: "이메일을 입력해주세요." });
+      setErrors({ email: MSG.EMAIL_REQUIRED });
       emailRef.current?.focus();
       return;
     }
     if (!password) {
-      setErrors({ password: "비밀번호를 입력해주세요." });
+      setErrors({ password: MSG.PASSWORD_REQUIRED });
       passwordRef.current?.focus();
       return;
     }
 
-    setErrors({});
+    resetErrors();
     setLoading(true);
     try {
       const { error } = await apiCall(() => signInWithEmail(email, password));
@@ -124,21 +119,21 @@ export function LoginScreen() {
           target_email: email,
         });
         if (!exists) {
-          setErrors({ email: "존재하지 않는 계정입니다." });
+          setErrors({ email: MSG.ACCOUNT_NOT_FOUND });
           emailRef.current?.focus();
         } else {
-          setErrors({ password: "비밀번호가 일치하지 않습니다." });
+          setErrors({ password: MSG.PASSWORD_WRONG });
           passwordRef.current?.focus();
         }
       }
     } catch {
-      setErrors({ email: "네트워크 오류가 발생했습니다. 인터넷 연결을 확인해주세요." });
+      setErrors({ email: MSG.NETWORK_ERROR });
     }
     setLoading(false);
   };
 
   const handleGoogleLogin = async () => {
-    setErrors({});
+    resetErrors();
     setLoading(true);
     const { error } = await apiCall(() => signInWithGoogle());
     if (error) {
@@ -156,38 +151,25 @@ export function LoginScreen() {
     return <PrivacyScreen onBack={() => setView("signup")} />;
   }
 
-  // OTP 인증 화면 (회원가입)
   if (view === "signupOtp") {
     return (
       <OtpScreen
         email={email}
         type="signup"
-        onVerified={() => {
-          // 인증 완료 → Supabase가 자동으로 세션 생성 → AuthProvider가 감지
-        }}
+        onVerified={() => {}}
         onBack={() => setView("signup")}
       />
     );
   }
 
-  // 비밀번호 찾기
   if (view === "forgotPassword") {
-    return (
-      <ForgotPasswordScreen
-        onBack={() => setView("login")}
-      />
-    );
+    return <ForgotPasswordScreen onBack={() => setView("login")} />;
   }
 
-  // 로그인 / 회원가입 폼
   return (
     <Screen scroll>
       <Body centered>
-        <Text
-          variant="title"
-          align="center"
-          style={styles.title}
-        >
+        <Text variant="title" align="center" style={styles.title}>
           📅 Dalio
         </Text>
         <Text variant="subtitle" align="center" style={styles.subtitle}>
@@ -309,7 +291,7 @@ export function LoginScreen() {
                   focusedStyle={styles.linkButtonFocused}
                   onPress={() => setView("terms")}
                 >
-                  <Text variant="caption" color="#6366f1">보기</Text>
+                  <Text variant="caption" color={COLORS.primary}>보기</Text>
                 </FocusablePressable>
               </View>
 
@@ -336,12 +318,12 @@ export function LoginScreen() {
                   focusedStyle={styles.linkButtonFocused}
                   onPress={() => setView("privacy")}
                 >
-                  <Text variant="caption" color="#6366f1">보기</Text>
+                  <Text variant="caption" color={COLORS.primary}>보기</Text>
                 </FocusablePressable>
               </View>
 
               {errors.agree ? (
-                <Text variant="caption" color="#ff453a" style={styles.errorMargin}>
+                <Text variant="caption" color={COLORS.error} style={styles.errorMargin}>
                   {errors.agree}
                 </Text>
               ) : null}
@@ -394,18 +376,16 @@ export function LoginScreen() {
         />
 
         {view === "signup" ? (
-          <>
-            <Button
-              title="로그인으로 돌아가기"
-              onPress={() => {
-                setView("login");
-                resetForm();
-              }}
-              disabled={loading}
-              variant="secondary"
-              style={styles.buttonMarginLarge}
-            />
-          </>
+          <Button
+            title="로그인으로 돌아가기"
+            onPress={() => {
+              setView("login");
+              resetForm();
+            }}
+            disabled={loading}
+            variant="secondary"
+            style={styles.buttonMarginLarge}
+          />
         ) : (
           <>
             <Button
@@ -432,7 +412,7 @@ export function LoginScreen() {
               onPress={() => {
                 setView("signup");
                 resetForm();
-                setTimeout(() => nameRef.current?.focus(), 100);
+                setTimeout(() => nameRef.current?.focus(), FOCUS_DELAY);
               }}
               disabled={loading}
               variant="secondary"
@@ -444,44 +424,3 @@ export function LoginScreen() {
     </Screen>
   );
 }
-
-function FocusablePressable({
-  onPress,
-  style: baseStyle,
-  focusedStyle,
-  children,
-}: {
-  onPress: () => void;
-  style: any;
-  focusedStyle: any;
-  children: React.ReactNode;
-}) {
-  const [focused, setFocused] = useState(false);
-  const ref = useRef<View>(null);
-
-  useEffect(() => {
-    if (Platform.OS !== "web" || !ref.current) return;
-    const el = ref.current as unknown as HTMLElement;
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === " ") {
-        e.preventDefault();
-        onPress();
-      }
-    };
-    el.addEventListener("keydown", handler);
-    return () => el.removeEventListener("keydown", handler);
-  }, [onPress]);
-
-  return (
-    <Pressable
-      ref={ref}
-      onPress={onPress}
-      onFocus={() => setFocused(true)}
-      onBlur={() => setFocused(false)}
-      style={[baseStyle, focused && focusedStyle]}
-    >
-      {children}
-    </Pressable>
-  );
-}
-

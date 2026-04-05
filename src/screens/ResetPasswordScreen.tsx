@@ -1,10 +1,12 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { TextInput as RNTextInput } from "react-native";
 import { Button, TextInput, Text, Screen, Body } from "@ys-io/ui";
 import { validate } from "@ys-io/utils";
 import { supabase } from "../lib/supabase";
 import { resetPasswordSchema } from "../lib/validations";
+import { useFormErrors } from "../hooks/useFormErrors";
 import { PasswordStrength } from "../components/PasswordStrength";
+import { useState } from "react";
 
 interface Props {
   onComplete: () => void | Promise<void>;
@@ -13,19 +15,11 @@ interface Props {
 export function ResetPasswordScreen({ onComplete }: Props) {
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
-  const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+  const { errors, setErrors, clearError } = useFormErrors();
 
   const passwordRef = useRef<RNTextInput>(null);
   const confirmRef = useRef<RNTextInput>(null);
-
-  const clearError = (field: string) => {
-    setErrors((prev) => {
-      const next = { ...prev };
-      delete next[field];
-      return next;
-    });
-  };
 
   const handleSubmit = async () => {
     const { errors: validationErrors } = await validate(resetPasswordSchema, {

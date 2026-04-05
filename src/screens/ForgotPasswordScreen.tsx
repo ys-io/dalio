@@ -1,8 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { TextInput as RNTextInput } from "react-native";
 import { useAuth } from "../providers/AuthProvider";
 import { supabase } from "../lib/supabase";
 import { Button, TextInput, Text, Screen, Body } from "@ys-io/ui";
+import { useAutoFocus } from "../hooks/useAutoFocus";
+import { MSG } from "../constans/messages";
 import { OtpScreen } from "./OtpScreen";
 import { ResetPasswordScreen } from "./ResetPasswordScreen";
 
@@ -20,13 +22,11 @@ export function ForgotPasswordScreen({ onBack }: Props) {
   const [step, setStep] = useState<Step>("email");
   const emailRef = useRef<RNTextInput>(null);
 
-  useEffect(() => {
-    setTimeout(() => emailRef.current?.focus(), 100);
-  }, []);
+  useAutoFocus(emailRef);
 
   const handleSubmit = async () => {
     if (!email) {
-      setError("이메일을 입력해주세요.");
+      setError(MSG.EMAIL_REQUIRED);
       emailRef.current?.focus();
       return;
     }
@@ -40,7 +40,7 @@ export function ForgotPasswordScreen({ onBack }: Props) {
       });
 
       if (!exists) {
-        setError("존재하지 않는 계정입니다.");
+        setError(MSG.ACCOUNT_NOT_FOUND);
         emailRef.current?.focus();
         setLoading(false);
         return;
@@ -57,7 +57,7 @@ export function ForgotPasswordScreen({ onBack }: Props) {
         setStep("otp");
       }
     } catch {
-      setError("네트워크 오류가 발생했습니다. 인터넷 연결을 확인해주세요.");
+      setError(MSG.NETWORK_ERROR);
     }
     setLoading(false);
   };

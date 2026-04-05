@@ -1,7 +1,10 @@
-import { useEffect, useRef, useState, useCallback } from "react";
 import { TextInput as RNTextInput, View, Platform } from "react-native";
 import { Button, Text, Screen, Body } from "@ys-io/ui";
 import { supabase } from "../lib/supabase";
+import { useOtpTimer } from "../hooks/useOtpTimer";
+import { useOtpInput } from "../hooks/useOtpInput";
+import { COLORS } from "../constans";
+import { MSG } from "../constans/messages";
 import { styles } from "./OtpScreen.styles";
 
 interface Props {
@@ -11,95 +14,15 @@ interface Props {
   onBack: () => void;
 }
 
-const OTP_DURATION = 180;
-
 export function OtpScreen({ email, type, onVerified, onBack }: Props) {
-  const [code, setCode] = useState(["", "", "", "", "", ""]);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [resending, setResending] = useState(false);
-  const [remaining, setRemaining] = useState(OTP_DURATION);
-  const [expired, setExpired] = useState(false);
-  const inputRefs = useRef<(RNTextInput | null)[]>(Array(6).fill(null));
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const startTimer = useCallback(() => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    timerRef.current = setInterval(() => {
-      setRemaining((prev) => {
-        if (prev <= 1) {
-          if (timerRef.current) clearInterval(timerRef.current);
-          setExpired(true);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  }, []);
-
-  useEffect(() => {
-    setTimeout(() => inputRefs.current[0]?.focus(), 100);
-    startTimer();
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [startTimer]);
-
-  const formatTime = (seconds: number) => {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `${m}:${s.toString().padStart(2, "0")}`;
-  };
-
-  const handleChange = (value: string, index: number) => {
-    if (!/^\d*$/.test(value)) return;
-
-    const newCode = [...code];
-
-    if (value.length > 1) {
-      const digits = value.replace(/\D/g, "").slice(0, 6).split("");
-      digits.forEach((d, i) => {
-        if (i < 6) newCode[i] = d;
-      });
-      setCode(newCode);
-      const nextIndex = Math.min(digits.length, 5);
-      inputRefs.current[nextIndex]?.focus();
-
-      if (digits.length === 6) {
-        submitCode(newCode.join(""));
-      }
-      return;
-    }
-
-    newCode[index] = value;
-    setCode(newCode);
-    setError("");
-
-    if (value && index < 5) {
-      inputRefs.current[index + 1]?.focus();
-    }
-
-    if (newCode.every((d) => d) && newCode.join("").length === 6) {
-      submitCode(newCode.join(""));
-    }
-  };
-
-  const handleKeyPress = (key: string, index: number) => {
-    if (key === "Backspace" && !code[index] && index > 0) {
-      const newCode = [...code];
-      newCode[index - 1] = "";
-      setCode(newCode);
-      inputRefs.current[index - 1]?.focus();
-    }
-  };
+  const { remaining, expired, formatTime, restart } = useOtpTimer();
 
   const submitCode = async (token: string) => {
     if (expired) {
-      setError("인증 코드가 만료되었습니다. 다시 요청해주세요.");
+      setError(MSG.OTP_EXPIRED);
       return;
     }
 
-    setLoading(true);
     try {
       const { error: verifyError } = await supabase.auth.verifyOtp({
         email,
@@ -108,38 +31,39 @@ export function OtpScreen({ email, type, onVerified, onBack }: Props) {
       });
 
       if (verifyError) {
-        setError("인증 코드가 올바르지 않습니다.");
-        setCode(["", "", "", "", "", ""]);
-        setTimeout(() => inputRefs.current[0]?.focus(), 100);
+        setError(MSG.OTP_INVALID);
+        resetCode();
       } else {
         onVerified();
       }
     } catch {
-      setError("네트워크 오류가 발생했습니다. 인터넷 연결을 확인해주세요.");
+      setError(MSG.NETWORK_ERROR);
     }
-    setLoading(false);
   };
 
-  const handleResend = async () => {
-    setResending(true);
-    setError("");
+  const {
+    code,
+    error,
+    setError,
+    inputRefs,
+    resetCode,
+    handleChange,
+    handleKeyPress,
+  } = useOtpInput(submitCode);
 
+  const handleResend = async () => {
+    setError("");
     try {
       if (type === "signup") {
         await supabase.auth.resend({ type: "signup", email });
       } else {
         await supabase.auth.resetPasswordForEmail(email);
       }
-
-      setCode(["", "", "", "", "", ""]);
-      setExpired(false);
-      setRemaining(OTP_DURATION);
-      startTimer();
-      setTimeout(() => inputRefs.current[0]?.focus(), 100);
+      resetCode();
+      restart();
     } catch {
-      setError("재전송에 실패했습니다. 인터넷 연결을 확인해주세요.");
+      setError(MSG.RESEND_FAILED);
     }
-    setResending(false);
   };
 
   return (
@@ -155,7 +79,7 @@ export function OtpScreen({ email, type, onVerified, onBack }: Props) {
         <Text
           variant="body"
           align="center"
-          color={expired ? "#ff453a" : "#6366f1"}
+          color={expired ? COLORS.error : COLORS.primary}
           style={styles.timer}
         >
           {expired ? "만료됨" : formatTime(remaining)}
@@ -182,7 +106,7 @@ export function OtpScreen({ email, type, onVerified, onBack }: Props) {
               keyboardType="number-pad"
               maxLength={index === 0 ? 6 : 1}
               selectTextOnFocus
-              placeholderTextColor="#636366"
+              placeholderTextColor={COLORS.muted}
             />
           ))}
         </View>
@@ -190,7 +114,7 @@ export function OtpScreen({ email, type, onVerified, onBack }: Props) {
         {error ? (
           <Text
             variant="caption"
-            color="#ff453a"
+            color={COLORS.error}
             align="center"
             style={styles.errorText}
           >
@@ -205,18 +129,11 @@ export function OtpScreen({ email, type, onVerified, onBack }: Props) {
             title="코드 재전송"
             onPress={handleResend}
             variant="primary"
-            loading={resending}
-            disabled={resending}
             style={styles.resendButton}
           />
         ) : null}
 
-        <Button
-          title="돌아가기"
-          onPress={onBack}
-          variant="secondary"
-          disabled={loading || resending}
-        />
+        <Button title="돌아가기" onPress={onBack} variant="secondary" />
       </Body>
     </Screen>
   );
