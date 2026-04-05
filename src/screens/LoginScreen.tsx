@@ -7,7 +7,10 @@ import { apiCall, validate } from "@ys-io/utils";
 import { supabase } from "../lib/supabase";
 import { Button, TextInput, Text, Screen, Body, Divider } from "@ys-io/ui";
 import { GoogleIcon } from "../components/GoogleIcon";
+import { OtpScreen } from "./OtpScreen";
 import { ForgotPasswordScreen } from "./ForgotPasswordScreen";
+
+type View = "login" | "signup" | "signupOtp" | "forgotPassword";
 
 export function LoginScreen() {
   const { signInWithEmail, signUpWithEmail } = useAuth();
@@ -15,11 +18,9 @@ export function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
-  const [isSignUp, setIsSignUp] = useState(false);
-  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [view, setView] = useState<View>("login");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [signUpSuccess, setSignUpSuccess] = useState(false);
 
   const nameRef = useRef<RNTextInput>(null);
   const emailRef = useRef<RNTextInput>(null);
@@ -34,8 +35,15 @@ export function LoginScreen() {
     });
   };
 
+  const resetForm = () => {
+    setErrors({});
+    setName("");
+    setPassword("");
+    setPasswordConfirm("");
+  };
+
   const handleSubmit = async () => {
-    if (isSignUp) {
+    if (view === "signup") {
       const { errors: validationErrors } = await validate(signUpSchema, {
         name,
         email,
@@ -51,23 +59,9 @@ export function LoginScreen() {
           passwordConfirmRef.current?.focus();
         return;
       }
-    }
 
-    if (!email) {
-      setErrors({ email: "이메일을 입력해주세요." });
-      emailRef.current?.focus();
-      return;
-    }
-    if (!isSignUp && !password) {
-      setErrors({ password: "비밀번호를 입력해주세요." });
-      passwordRef.current?.focus();
-      return;
-    }
-
-    setErrors({});
-    setLoading(true);
-
-    if (isSignUp) {
+      setErrors({});
+      setLoading(true);
       const { error } = await apiCall(() =>
         signUpWithEmail(email, password, name),
       );
@@ -75,29 +69,37 @@ export function LoginScreen() {
         setErrors({ email: error });
         emailRef.current?.focus();
       } else {
-        // 가입 성공 → 자동 로그인 시도
-        const { error: loginError } = await apiCall(() =>
-          signInWithEmail(email, password),
-        );
-        if (loginError) {
-          // 이메일 확인이 필요한 경우
-          setSignUpSuccess(true);
-        }
+        setView("signupOtp");
       }
-    } else {
-      const { error } = await apiCall(() => signInWithEmail(email, password));
-      if (error) {
-        const { data: exists } = await supabase.rpc("check_email_exists", {
-          target_email: email,
-        });
+      setLoading(false);
+      return;
+    }
 
-        if (!exists) {
-          setErrors({ email: "존재하지 않는 계정입니다." });
-          emailRef.current?.focus();
-        } else {
-          setErrors({ password: "비밀번호가 일치하지 않습니다." });
-          passwordRef.current?.focus();
-        }
+    // login
+    if (!email) {
+      setErrors({ email: "이메일을 입력해주세요." });
+      emailRef.current?.focus();
+      return;
+    }
+    if (!password) {
+      setErrors({ password: "비밀번호를 입력해주세요." });
+      passwordRef.current?.focus();
+      return;
+    }
+
+    setErrors({});
+    setLoading(true);
+    const { error } = await apiCall(() => signInWithEmail(email, password));
+    if (error) {
+      const { data: exists } = await supabase.rpc("check_email_exists", {
+        target_email: email,
+      });
+      if (!exists) {
+        setErrors({ email: "존재하지 않는 계정입니다." });
+        emailRef.current?.focus();
+      } else {
+        setErrors({ password: "비밀번호가 일치하지 않습니다." });
+        passwordRef.current?.focus();
       }
     }
     setLoading(false);
@@ -114,45 +116,45 @@ export function LoginScreen() {
     setLoading(false);
   };
 
-  if (isForgotPassword) {
-    return <ForgotPasswordScreen onBack={() => setIsForgotPassword(false)} />;
-  }
-
-  if (signUpSuccess) {
+  // OTP 인증 화면 (회원가입)
+  if (view === "signupOtp") {
     return (
-      <Screen>
-        <Body centered>
-          <Text variant="title" align="center" style={{ marginBottom: 16 }}>
-            가입이 완료되었습니다!
-          </Text>
-          <Text
-            variant="subtitle"
-            align="center"
-            style={{ marginBottom: 40, lineHeight: 24 }}
-          >
-            {email}으로 인증 메일을 보냈습니다.{"\n"}이메일을 확인해주세요.
-          </Text>
-          <Button
-            title="로그인으로 돌아가기"
-            onPress={() => {
-              setSignUpSuccess(false);
-              setIsSignUp(false);
-              setErrors({});
-              setPassword("");
-              setPasswordConfirm("");
-              setName("");
-            }}
-            variant="primary"
-          />
-        </Body>
-      </Screen>
+      <OtpScreen
+        email={email}
+        type="signup"
+        onVerified={() => {
+          // 인증 완료 → Supabase가 자동으로 세션 생성 → AuthProvider가 감지
+        }}
+        onBack={() => setView("signup")}
+      />
     );
   }
 
+  // 비밀번호 찾기
+  if (view === "forgotPassword") {
+    return (
+      <ForgotPasswordScreen
+        onBack={() => setView("login")}
+      />
+    );
+  }
+
+  // 로그인 / 회원가입 폼
   return (
     <Screen>
       <Body centered scroll>
-        {isSignUp && (
+        <Text
+          variant="title"
+          align="center"
+          style={{ marginBottom: 8, marginTop: 40 }}
+        >
+          📅 Dalio
+        </Text>
+        <Text variant="subtitle" align="center" style={{ marginBottom: 40 }}>
+          친구들과 일정을 공유하고{"\n"}함께 계획을 세워보세요
+        </Text>
+
+        {view === "signup" && (
           <>
             <TextInput
               ref={nameRef}
@@ -187,7 +189,7 @@ export function LoginScreen() {
             <TextInput
               ref={passwordRef}
               label="비밀번호"
-              placeholder="8자 이상 입력하세요"
+              placeholder="8자 이상, 대문자·특수문자 포함"
               value={password}
               onChangeText={(v) => {
                 setPassword(v);
@@ -216,7 +218,7 @@ export function LoginScreen() {
           </>
         )}
 
-        {!isSignUp && (
+        {view === "login" && (
           <>
             <TextInput
               ref={emailRef}
@@ -252,7 +254,7 @@ export function LoginScreen() {
         )}
 
         <Button
-          title={isSignUp ? "가입하기" : "로그인"}
+          title={view === "signup" ? "가입하기" : "로그인"}
           onPress={handleSubmit}
           disabled={loading}
           loading={loading}
@@ -260,16 +262,13 @@ export function LoginScreen() {
           style={{ marginBottom: 12 }}
         />
 
-        {isSignUp ? (
+        {view === "signup" ? (
           <>
             <Button
               title="로그인으로 돌아가기"
               onPress={() => {
-                setIsSignUp(false);
-                setErrors({});
-                setName("");
-                setPassword("");
-                setPasswordConfirm("");
+                setView("login");
+                resetForm();
               }}
               variant="secondary"
               style={{ marginBottom: 16 }}
@@ -283,7 +282,7 @@ export function LoginScreen() {
           <>
             <Button
               title="비밀번호를 잊으셨나요?"
-              onPress={() => setIsForgotPassword(true)}
+              onPress={() => setView("forgotPassword")}
               variant="secondary"
               style={{ marginBottom: 12 }}
             />
@@ -302,10 +301,8 @@ export function LoginScreen() {
             <Button
               title="회원가입"
               onPress={() => {
-                setIsSignUp(true);
-                setErrors({});
-                setPassword("");
-                setPasswordConfirm("");
+                setView("signup");
+                resetForm();
                 setTimeout(() => nameRef.current?.focus(), 100);
               }}
               variant="secondary"

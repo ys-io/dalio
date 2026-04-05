@@ -1,24 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import { TextInput as RNTextInput } from "react-native";
-import { apiCall } from "@ys-io/utils";
 import { supabase } from "../lib/supabase";
-import {
-  Button,
-  TextInput,
-  Text,
-  Screen,
-  Body,
-} from "@ys-io/ui";
+import { Button, TextInput, Text, Screen, Body } from "@ys-io/ui";
+import { OtpScreen } from "./OtpScreen";
+import { ResetPasswordScreen } from "./ResetPasswordScreen";
 
 interface Props {
   onBack: () => void;
 }
 
+type Step = "email" | "otp" | "reset" | "done";
+
 export function ForgotPasswordScreen({ onBack }: Props) {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [sent, setSent] = useState(false);
+  const [step, setStep] = useState<Step>("email");
   const emailRef = useRef<RNTextInput>(null);
 
   useEffect(() => {
@@ -46,33 +43,50 @@ export function ForgotPasswordScreen({ onBack }: Props) {
       return;
     }
 
-    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email);
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(
+      email,
+    );
     if (resetError) {
       setError(resetError.message);
       emailRef.current?.focus();
     } else {
-      setSent(true);
+      setStep("otp");
     }
     setLoading(false);
   };
 
-  if (sent) {
+  if (step === "otp") {
+    return (
+      <OtpScreen
+        email={email}
+        type="recovery"
+        onVerified={() => setStep("reset")}
+        onBack={() => setStep("email")}
+      />
+    );
+  }
+
+  if (step === "reset") {
+    return (
+      <ResetPasswordScreen
+        onComplete={() => setStep("done")}
+      />
+    );
+  }
+
+  if (step === "done") {
     return (
       <Screen>
         <Body centered>
-          <Text
-            variant="title"
-            align="center"
-            style={{ marginBottom: 16 }}
-          >
-            이메일을 확인해주세요
+          <Text variant="title" align="center" style={{ marginBottom: 16 }}>
+            비밀번호가 변경되었습니다!
           </Text>
           <Text
             variant="subtitle"
             align="center"
             style={{ marginBottom: 40, lineHeight: 24 }}
           >
-            {email}으로{"\n"}비밀번호 재설정 링크를 보냈습니다.
+            새 비밀번호로 로그인해주세요.
           </Text>
           <Button
             title="로그인으로 돌아가기"
@@ -87,11 +101,7 @@ export function ForgotPasswordScreen({ onBack }: Props) {
   return (
     <Screen>
       <Body centered>
-        <Text
-          variant="title"
-          align="center"
-          style={{ marginBottom: 8 }}
-        >
+        <Text variant="title" align="center" style={{ marginBottom: 8 }}>
           비밀번호 찾기
         </Text>
         <Text
@@ -99,7 +109,7 @@ export function ForgotPasswordScreen({ onBack }: Props) {
           align="center"
           style={{ marginBottom: 40, lineHeight: 24 }}
         >
-          가입한 이메일을 입력하시면{"\n"}비밀번호 재설정 링크를 보내드립니다.
+          가입한 이메일을 입력하시면{"\n"}인증 코드를 보내드립니다.
         </Text>
 
         <TextInput
@@ -119,12 +129,12 @@ export function ForgotPasswordScreen({ onBack }: Props) {
         />
 
         <Button
-          title="재설정 링크 보내기"
+          title="인증 코드 보내기"
           onPress={handleSubmit}
           disabled={loading}
-          variant="primary"
           loading={loading}
-          style={{ marginBottom: 16 }}
+          variant="primary"
+          style={{ marginBottom: 12 }}
         />
 
         <Button
