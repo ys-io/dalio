@@ -1,23 +1,24 @@
 import { StyleSheet } from "react-native";
+import { COLORS } from "@constans/colors";
 
 export const styles = StyleSheet.create({
   calendarPlaceholder: {
     flex: 1,
     borderWidth: 1,
-    borderColor: "#2c2c2e",
+    borderColor: COLORS.border,
     borderRadius: 12,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#1c1c1e",
+    backgroundColor: COLORS.surface,
   },
   calendarText: {
     fontSize: 18,
   },
   headerBorder: {
-    borderBottomColor: "#2c2c2e",
+    borderBottomColor: COLORS.border,
   },
   footerBorder: {
-    borderTopColor: "#2c2c2e",
+    borderTopColor: COLORS.border,
   },
   titleMargin: {
     marginBottom: 4,

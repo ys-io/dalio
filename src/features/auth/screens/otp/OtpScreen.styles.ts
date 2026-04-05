@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { COLORS } from "@constans/colors";
 
 export const styles = StyleSheet.create({
   title: {
@@ -22,20 +23,20 @@ export const styles = StyleSheet.create({
   codeInput: {
     width: 48,
     height: 56,
-    backgroundColor: "#1c1c1e",
+    backgroundColor: COLORS.surface,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "transparent",
+    borderColor: COLORS.transparent,
     textAlign: "center",
     fontSize: 24,
     fontWeight: "bold",
-    color: "#ffffff",
+    color: COLORS.white,
   },
   codeInputFilled: {
-    borderColor: "#6366f1",
+    borderColor: COLORS.primary,
   },
   codeInputError: {
-    borderColor: "#ff453a",
+    borderColor: COLORS.error,
   },
   errorText: {
     marginBottom: 16,

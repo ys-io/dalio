@@ -1,6 +1,7 @@
 import { View } from "react-native";
 import { useAuth } from "@providers/AuthProvider";
 import { Text, Button, Screen, Header, Body, Footer } from "@ys-io/ui";
+import { COLORS } from "@constans/colors";
 import { MSG } from "@constans/messages";
 import { styles } from "./HomeScreen.styles";
 
@@ -18,7 +19,7 @@ export function HomeScreen() {
 
       <Body>
         <View style={styles.calendarPlaceholder}>
-          <Text color="#636366" style={styles.calendarText}>
+          <Text color={COLORS.muted} style={styles.calendarText}>
             {MSG.HOME_CALENDAR_PLACEHOLDER}
           </Text>
         </View>

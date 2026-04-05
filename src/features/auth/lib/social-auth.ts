@@ -1,5 +1,6 @@
 import { Platform } from "react-native";
 import { supabase } from "@services/supabase";
+import { MSG } from "@constans/messages";
 
 let GoogleSignin: any;
 
@@ -28,7 +29,7 @@ export async function signInWithGoogle() {
   const response = await GoogleSignin.signIn();
 
   if (!response.data?.idToken) {
-    throw new Error("Google 로그인에서 ID 토큰을 받지 못했습니다.");
+    throw new Error(MSG.GOOGLE_NO_ID_TOKEN);
   }
 
   const { error } = await supabase.auth.signInWithIdToken({

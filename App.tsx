@@ -3,26 +3,7 @@ import { AuthProvider, useAuth } from "@providers/AuthProvider";
 import { LoginScreen } from "@features/auth/screens/login/LoginScreen";
 import { HomeScreen } from "@features/home/screens/HomeScreen";
 import { LoadingScreen, ThemeProvider } from "@ys-io/ui";
-
-const darkTheme = {
-  colors: {
-    background: "#000000",
-    surface: "#1c1c1e",
-    primary: "#6366f1",
-    primaryForeground: "#ffffff",
-    secondary: "#1c1c1e",
-    secondaryForeground: "#ffffff",
-    danger: "#ff453a",
-    textPrimary: "#ffffff",
-    textSecondary: "#ababab",
-    textTertiary: "#8e8e93",
-    textMuted: "#636366",
-    border: "#2c2c2e",
-    borderLight: "#1c1c1e",
-    placeholder: "#636366",
-    focus: "#6366f1",
-  },
-};
+import { darkTheme } from "@constans/theme";
 
 function Router() {
   const { isLoading, isAuthenticated } = useAuth();

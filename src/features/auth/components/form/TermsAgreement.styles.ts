@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { COLORS } from "@constans/colors";
 
 export const styles = StyleSheet.create({
   container: {
@@ -18,30 +19,30 @@ export const styles = StyleSheet.create({
     gap: 12,
     borderRadius: 8,
     borderWidth: 2,
-    borderColor: "transparent",
+    borderColor: COLORS.transparent,
   },
   checkboxFocused: {
-    borderColor: "#6366f1",
+    borderColor: COLORS.primary,
   },
   checkbox: {
     width: 22,
     height: 22,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: "#636366",
+    borderColor: COLORS.muted,
     alignItems: "center",
     justifyContent: "center",
   },
   checkboxChecked: {
-    backgroundColor: "#6366f1",
-    borderColor: "#6366f1",
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
   },
   allAgreeText: {
     fontSize: 14,
   },
   divider: {
     height: 1,
-    backgroundColor: "#2c2c2e",
+    backgroundColor: COLORS.border,
     marginVertical: 4,
   },
   linkButton: {
@@ -49,10 +50,10 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: 8,
     borderWidth: 2,
-    borderColor: "transparent",
+    borderColor: COLORS.transparent,
   },
   linkFocused: {
-    borderColor: "#6366f1",
+    borderColor: COLORS.primary,
   },
   error: {
     marginTop: 8,

@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { TextInput as RNTextInput } from "react-native";
 import { Button, TextInput, Text, Screen, Body } from "@ys-io/ui";
 import { validate } from "@ys-io/utils";
@@ -7,7 +7,7 @@ import { resetPasswordSchema } from "@features/auth/lib/validations";
 import { useFormErrors } from "@hooks/common/useFormErrors";
 import { PasswordStrength } from "@features/auth/components/form/PasswordStrength";
 import { MSG } from "@constans/messages";
-import { useState } from "react";
+import { styles } from "./ResetPasswordScreen.styles";
 
 interface Props {
   onComplete: () => void | Promise<void>;
@@ -49,14 +49,10 @@ export function ResetPasswordScreen({ onComplete }: Props) {
   return (
     <Screen>
       <Body centered>
-        <Text variant="title" align="center" style={{ marginBottom: 8 }}>
+        <Text variant="title" align="center" style={styles.title}>
           {MSG.RESET_PASSWORD_TITLE}
         </Text>
-        <Text
-          variant="subtitle"
-          align="center"
-          style={{ marginBottom: 40, lineHeight: 24 }}
-        >
+        <Text variant="subtitle" align="center" style={styles.subtitle}>
           {MSG.RESET_PASSWORD_SUBTITLE}
         </Text>
 
@@ -65,14 +61,11 @@ export function ResetPasswordScreen({ onComplete }: Props) {
           label={MSG.LABEL_NEW_PASSWORD}
           placeholder={MSG.PLACEHOLDER_PASSWORD_SIGNUP}
           value={password}
-          onChangeText={(v) => {
-            setPassword(v);
-            clearError("password");
-          }}
+          onChangeText={(v) => { setPassword(v); clearError("password"); }}
           secureTextEntry
           onSubmitEditing={handleSubmit}
           error={errors.password}
-          containerStyle={{ marginBottom: 4 }}
+          containerStyle={styles.fieldMarginSmall}
         />
 
         <PasswordStrength password={password} />
@@ -82,14 +75,11 @@ export function ResetPasswordScreen({ onComplete }: Props) {
           label={MSG.LABEL_NEW_PASSWORD_CONFIRM}
           placeholder={MSG.PLACEHOLDER_PASSWORD_CONFIRM}
           value={passwordConfirm}
-          onChangeText={(v) => {
-            setPasswordConfirm(v);
-            clearError("passwordConfirm");
-          }}
+          onChangeText={(v) => { setPasswordConfirm(v); clearError("passwordConfirm"); }}
           secureTextEntry
           onSubmitEditing={handleSubmit}
           error={errors.passwordConfirm}
-          containerStyle={{ marginBottom: 32 }}
+          containerStyle={styles.fieldMargin}
         />
 
         <Button

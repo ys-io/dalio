@@ -36,7 +36,7 @@ export function TermsAgreement({
         onPress={onToggleAll}
       >
         <View style={[styles.checkbox, allAgreed && styles.checkboxChecked]}>
-          {allAgreed && <Text variant="caption" color="#fff">✓</Text>}
+          {allAgreed && <Text variant="caption" color={COLORS.white}>✓</Text>}
         </View>
         <Text variant="body" style={styles.allAgreeText}>{MSG.TERMS_AGREE_ALL}</Text>
       </FocusablePressable>
@@ -50,7 +50,7 @@ export function TermsAgreement({
           onPress={onToggleTerms}
         >
           <View style={[styles.checkbox, agreedTerms && styles.checkboxChecked]}>
-            {agreedTerms && <Text variant="caption" color="#fff">✓</Text>}
+            {agreedTerms && <Text variant="caption" color={COLORS.white}>✓</Text>}
           </View>
           <Text variant="caption">{MSG.TERMS_AGREE_TOS}</Text>
         </FocusablePressable>
@@ -70,7 +70,7 @@ export function TermsAgreement({
           onPress={onTogglePrivacy}
         >
           <View style={[styles.checkbox, agreedPrivacy && styles.checkboxChecked]}>
-            {agreedPrivacy && <Text variant="caption" color="#fff">✓</Text>}
+            {agreedPrivacy && <Text variant="caption" color={COLORS.white}>✓</Text>}
           </View>
           <Text variant="caption">{MSG.TERMS_AGREE_PRIVACY}</Text>
         </FocusablePressable>
