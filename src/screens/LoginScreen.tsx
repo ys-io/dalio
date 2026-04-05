@@ -180,8 +180,8 @@ export function LoginScreen() {
 
   // 로그인 / 회원가입 폼
   return (
-    <Screen>
-      <Body centered scroll>
+    <Screen scroll>
+      <Body centered>
         <Text
           variant="title"
           align="center"

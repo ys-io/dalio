@@ -7,8 +7,8 @@ interface Props {
 
 export function TermsScreen({ onBack }: Props) {
   return (
-    <Screen>
-      <Body scroll>
+    <Screen scroll>
+      <Body>
         <Text variant="title" style={{ marginBottom: 24 }}>
           이용약관
         </Text>

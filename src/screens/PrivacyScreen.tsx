@@ -7,8 +7,8 @@ interface Props {
 
 export function PrivacyScreen({ onBack }: Props) {
   return (
-    <Screen>
-      <Body scroll>
+    <Screen scroll>
+      <Body>
         <Text variant="title" style={{ marginBottom: 24 }}>
           개인정보처리방침
         </Text>
