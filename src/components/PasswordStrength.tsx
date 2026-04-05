@@ -12,7 +12,7 @@ const rules = [
 ];
 
 export function PasswordStrength({ password }: Props) {
-  if (!password) return null;
+  if (password === undefined) return null;
 
   const passed = rules.filter((r) => r.test(password)).length;
   const barColor =
