@@ -244,65 +244,7 @@ export function LoginScreen() {
               secureTextEntry
               onSubmitEditing={handleSubmit}
               error={errors.passwordConfirm}
-              containerStyle={{ marginBottom: 32 }}
-            />
-          </>
-        )}
-
-        {view === "login" && (
-          <>
-            <TextInput
-              ref={emailRef}
-              label="이메일"
-              placeholder="example@email.com"
-              value={email}
-              onChangeText={(v) => {
-                setEmail(v);
-                clearError("email");
-              }}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              onSubmitEditing={handleSubmit}
-              error={errors.email}
               containerStyle={{ marginBottom: 16 }}
-            />
-
-            <TextInput
-              ref={passwordRef}
-              label="비밀번호"
-              placeholder="비밀번호를 입력하세요"
-              value={password}
-              onChangeText={(v) => {
-                setPassword(v);
-                clearError("password");
-              }}
-              secureTextEntry
-              onSubmitEditing={handleSubmit}
-              error={errors.password}
-              containerStyle={{ marginBottom: 32 }}
-            />
-          </>
-        )}
-
-        <Button
-          title={view === "signup" ? "가입하기" : "로그인"}
-          onPress={handleSubmit}
-          disabled={loading}
-          loading={loading}
-          variant="primary"
-          style={{ marginBottom: 12 }}
-        />
-
-        {view === "signup" ? (
-          <>
-            <Button
-              title="로그인으로 돌아가기"
-              onPress={() => {
-                setView("login");
-                resetForm();
-              }}
-              variant="secondary"
-              style={{ marginBottom: 16 }}
             />
 
             <View style={styles.checkboxGroup}>
@@ -390,6 +332,64 @@ export function LoginScreen() {
                 </Text>
               ) : null}
             </View>
+          </>
+        )}
+
+        {view === "login" && (
+          <>
+            <TextInput
+              ref={emailRef}
+              label="이메일"
+              placeholder="example@email.com"
+              value={email}
+              onChangeText={(v) => {
+                setEmail(v);
+                clearError("email");
+              }}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              onSubmitEditing={handleSubmit}
+              error={errors.email}
+              containerStyle={{ marginBottom: 16 }}
+            />
+
+            <TextInput
+              ref={passwordRef}
+              label="비밀번호"
+              placeholder="비밀번호를 입력하세요"
+              value={password}
+              onChangeText={(v) => {
+                setPassword(v);
+                clearError("password");
+              }}
+              secureTextEntry
+              onSubmitEditing={handleSubmit}
+              error={errors.password}
+              containerStyle={{ marginBottom: 32 }}
+            />
+          </>
+        )}
+
+        <Button
+          title={view === "signup" ? "가입하기" : "로그인"}
+          onPress={handleSubmit}
+          disabled={loading}
+          loading={loading}
+          variant="primary"
+          style={{ marginBottom: 12 }}
+        />
+
+        {view === "signup" ? (
+          <>
+            <Button
+              title="로그인으로 돌아가기"
+              onPress={() => {
+                setView("login");
+                resetForm();
+              }}
+              variant="secondary"
+              style={{ marginBottom: 16 }}
+            />
           </>
         ) : (
           <>
