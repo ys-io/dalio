@@ -20,17 +20,6 @@ export function PasswordStrength({ password }: Props) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.barContainer}>
-        {[0, 1, 2].map((i) => (
-          <View
-            key={i}
-            style={[
-              styles.bar,
-              { backgroundColor: i < passed ? barColor : "#2c2c2e" },
-            ]}
-          />
-        ))}
-      </View>
       <View style={styles.rules}>
         {rules.map((rule) => {
           const ok = rule.test(password);
