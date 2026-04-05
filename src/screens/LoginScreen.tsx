@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { TextInput as RNTextInput } from "react-native";
+import { TextInput as RNTextInput, View, Pressable, StyleSheet } from "react-native";
 import { useAuth } from "../providers/AuthProvider";
 import { signInWithGoogle } from "../lib/social-auth";
 import { signUpSchema } from "../lib/validations";
@@ -9,8 +9,10 @@ import { Button, TextInput, Text, Screen, Body, Divider } from "@ys-io/ui";
 import { GoogleIcon } from "../components/GoogleIcon";
 import { OtpScreen } from "./OtpScreen";
 import { ForgotPasswordScreen } from "./ForgotPasswordScreen";
+import { TermsScreen } from "./TermsScreen";
+import { PrivacyScreen } from "./PrivacyScreen";
 
-type View = "login" | "signup" | "signupOtp" | "forgotPassword";
+type ViewType = "login" | "signup" | "signupOtp" | "forgotPassword" | "terms" | "privacy";
 
 export function LoginScreen() {
   const { signInWithEmail, signUpWithEmail } = useAuth();
@@ -18,7 +20,9 @@ export function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
-  const [view, setView] = useState<View>("login");
+  const [view, setView] = useState<ViewType>("login");
+  const [agreedTerms, setAgreedTerms] = useState(false);
+  const [agreedPrivacy, setAgreedPrivacy] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -40,6 +44,8 @@ export function LoginScreen() {
     setName("");
     setPassword("");
     setPasswordConfirm("");
+    setAgreedTerms(false);
+    setAgreedPrivacy(false);
   };
 
   const handleSubmit = async () => {
@@ -57,6 +63,11 @@ export function LoginScreen() {
         else if (validationErrors.password) passwordRef.current?.focus();
         else if (validationErrors.passwordConfirm)
           passwordConfirmRef.current?.focus();
+        return;
+      }
+
+      if (!agreedTerms || !agreedPrivacy) {
+        setErrors({ agree: "이용약관과 개인정보처리방침에 동의해주세요." });
         return;
       }
 
@@ -127,6 +138,14 @@ export function LoginScreen() {
     }
     setLoading(false);
   };
+
+  if (view === "terms") {
+    return <TermsScreen onBack={() => setView("signup")} />;
+  }
+
+  if (view === "privacy") {
+    return <PrivacyScreen onBack={() => setView("signup")} />;
+  }
 
   // OTP 인증 화면 (회원가입)
   if (view === "signupOtp") {
@@ -286,9 +305,91 @@ export function LoginScreen() {
               style={{ marginBottom: 16 }}
             />
 
-            <Text variant="caption" align="center" style={{ marginBottom: 24 }}>
-              가입하면 이용약관 및 개인정보처리방침에 동의하게 됩니다
-            </Text>
+            <View style={styles.checkboxGroup}>
+              <Pressable
+                style={styles.checkboxRow}
+                onPress={() => {
+                  const next = !agreedTerms || !agreedPrivacy;
+                  setAgreedTerms(next);
+                  setAgreedPrivacy(next);
+                  clearError("agree");
+                }}
+              >
+                <View
+                  style={[
+                    styles.checkbox,
+                    agreedTerms && agreedPrivacy && styles.checkboxChecked,
+                  ]}
+                >
+                  {agreedTerms && agreedPrivacy && (
+                    <Text variant="caption" color="#fff">✓</Text>
+                  )}
+                </View>
+                <Text variant="body" style={{ fontSize: 14 }}>
+                  전체 동의
+                </Text>
+              </Pressable>
+
+              <View style={styles.dividerThin} />
+
+              <Pressable
+                style={styles.checkboxRow}
+                onPress={() => {
+                  setAgreedTerms(!agreedTerms);
+                  clearError("agree");
+                }}
+              >
+                <View
+                  style={[styles.checkbox, agreedTerms && styles.checkboxChecked]}
+                >
+                  {agreedTerms && (
+                    <Text variant="caption" color="#fff">✓</Text>
+                  )}
+                </View>
+                <Text variant="caption" style={{ flex: 1 }}>
+                  이용약관 동의 (필수)
+                </Text>
+                <Text
+                  variant="caption"
+                  color="#6366f1"
+                  onPress={() => setView("terms")}
+                >
+                  보기
+                </Text>
+              </Pressable>
+
+              <Pressable
+                style={styles.checkboxRow}
+                onPress={() => {
+                  setAgreedPrivacy(!agreedPrivacy);
+                  clearError("agree");
+                }}
+              >
+                <View
+                  style={[styles.checkbox, agreedPrivacy && styles.checkboxChecked]}
+                >
+                  {agreedPrivacy && (
+                    <Text variant="caption" color="#fff">✓</Text>
+                  )}
+                </View>
+                <Text variant="caption" style={{ flex: 1 }}>
+                  개인정보처리방침 동의 (필수)
+                </Text>
+                <Text
+                  variant="caption"
+                  color="#6366f1"
+                  onPress={() => setView("privacy")}
+                >
+                  보기
+                </Text>
+              </Pressable>
+
+              {errors.agree ? (
+                <Text variant="caption" color="#ff453a" style={{ marginTop: 8 }}>
+                  {errors.agree}
+                </Text>
+              ) : null}
+            </View>
           </>
         ) : (
           <>
@@ -326,3 +427,33 @@ export function LoginScreen() {
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  checkboxGroup: {
+    marginBottom: 24,
+  },
+  checkboxRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 10,
+    gap: 12,
+  },
+  checkbox: {
+    width: 22,
+    height: 22,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "#636366",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  checkboxChecked: {
+    backgroundColor: "#6366f1",
+    borderColor: "#6366f1",
+  },
+  dividerThin: {
+    height: 1,
+    backgroundColor: "#2c2c2e",
+    marginVertical: 4,
+  },
+});
