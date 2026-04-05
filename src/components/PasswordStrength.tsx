@@ -66,7 +66,6 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   rules: {
-    flexDirection: "row",
-    gap: 12,
+    gap: 4,
   },
 });
