@@ -24,14 +24,24 @@ export function PasswordStrength({ password }: Props) {
         {rules.map((rule) => {
           const ok = rule.test(password);
           return (
-            <Text
-              key={rule.label}
-              variant="caption"
-              color={ok ? "#22c55e" : "#636366"}
-              style={{ fontSize: 12 }}
-            >
-              {ok ? "✓" : "○"} {rule.label}
-            </Text>
+            <View key={rule.label} style={styles.ruleRow}>
+              <View style={styles.iconContainer}>
+                <Text
+                  variant="caption"
+                  color={ok ? "#22c55e" : "#636366"}
+                  style={{ fontSize: 12 }}
+                >
+                  {ok ? "✓" : "○"}
+                </Text>
+              </View>
+              <Text
+                variant="caption"
+                color={ok ? "#22c55e" : "#636366"}
+                style={{ fontSize: 12 }}
+              >
+                {rule.label}
+              </Text>
+            </View>
           );
         })}
       </View>
@@ -56,5 +66,14 @@ const styles = StyleSheet.create({
   },
   rules: {
     gap: 4,
+  },
+  ruleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  iconContainer: {
+    width: 14,
+    alignItems: "center",
   },
 });
