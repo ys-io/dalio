@@ -1,7 +1,10 @@
 import { useRef, useState } from "react";
 import { TextInput as RNTextInput } from "react-native";
 import { Button, TextInput, Text, Screen, Body } from "@ys-io/ui";
+import { validate } from "@ys-io/utils";
 import { supabase } from "../lib/supabase";
+import { resetPasswordSchema } from "../lib/validations";
+import { PasswordStrength } from "../components/PasswordStrength";
 
 interface Props {
   onComplete: () => void | Promise<void>;
@@ -16,29 +19,23 @@ export function ResetPasswordScreen({ onComplete }: Props) {
   const passwordRef = useRef<RNTextInput>(null);
   const confirmRef = useRef<RNTextInput>(null);
 
+  const clearError = (field: string) => {
+    setErrors((prev) => {
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  };
+
   const handleSubmit = async () => {
-    const newErrors: Record<string, string> = {};
-
-    if (!password) {
-      newErrors.password = "비밀번호를 입력해주세요.";
-    } else if (password.length < 8) {
-      newErrors.password = "비밀번호는 8자 이상이어야 합니다.";
-    } else if (!/[A-Z]/.test(password)) {
-      newErrors.password = "대문자를 포함해야 합니다.";
-    } else if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
-      newErrors.password = "특수문자를 포함해야 합니다.";
-    }
-
-    if (!passwordConfirm) {
-      newErrors.passwordConfirm = "비밀번호를 다시 입력해주세요.";
-    } else if (password !== passwordConfirm) {
-      newErrors.passwordConfirm = "비밀번호가 일치하지 않습니다.";
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      if (newErrors.password) passwordRef.current?.focus();
-      else if (newErrors.passwordConfirm) confirmRef.current?.focus();
+    const { errors: validationErrors } = await validate(resetPasswordSchema, {
+      password,
+      passwordConfirm,
+    });
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      if (validationErrors.password) passwordRef.current?.focus();
+      else if (validationErrors.passwordConfirm) confirmRef.current?.focus();
       return;
     }
 
@@ -49,7 +46,7 @@ export function ResetPasswordScreen({ onComplete }: Props) {
       setErrors({ password: error.message });
       passwordRef.current?.focus();
     } else {
-      onComplete();
+      await onComplete();
     }
     setLoading(false);
   };
@@ -75,17 +72,15 @@ export function ResetPasswordScreen({ onComplete }: Props) {
           value={password}
           onChangeText={(v) => {
             setPassword(v);
-            setErrors((prev) => {
-              const next = { ...prev };
-              delete next.password;
-              return next;
-            });
+            clearError("password");
           }}
           secureTextEntry
           onSubmitEditing={handleSubmit}
           error={errors.password}
-          containerStyle={{ marginBottom: 16 }}
+          containerStyle={{ marginBottom: 4 }}
         />
+
+        <PasswordStrength password={password} />
 
         <TextInput
           ref={confirmRef}
@@ -94,11 +89,7 @@ export function ResetPasswordScreen({ onComplete }: Props) {
           value={passwordConfirm}
           onChangeText={(v) => {
             setPasswordConfirm(v);
-            setErrors((prev) => {
-              const next = { ...prev };
-              delete next.passwordConfirm;
-              return next;
-            });
+            clearError("passwordConfirm");
           }}
           secureTextEntry
           onSubmitEditing={handleSubmit}

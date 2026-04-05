@@ -7,6 +7,7 @@ import { apiCall, validate } from "@ys-io/utils";
 import { supabase } from "../lib/supabase";
 import { Button, TextInput, Text, Screen, Body, Divider } from "@ys-io/ui";
 import { GoogleIcon } from "../components/GoogleIcon";
+import { PasswordStrength } from "../components/PasswordStrength";
 import { OtpScreen } from "./OtpScreen";
 import { ForgotPasswordScreen } from "./ForgotPasswordScreen";
 import { TermsScreen } from "./TermsScreen";
@@ -73,25 +74,29 @@ export function LoginScreen() {
       setErrors({});
       setLoading(true);
 
-      // 이미 가입된 이메일인지 체크
-      const { data: exists } = await supabase.rpc("check_email_exists", {
-        target_email: email,
-      });
-      if (exists) {
-        setErrors({ email: "이미 가입된 이메일입니다." });
-        emailRef.current?.focus();
-        setLoading(false);
-        return;
-      }
+      try {
+        // 이미 가입된 이메일인지 체크
+        const { data: exists } = await supabase.rpc("check_email_registered", {
+          target_email: email,
+        });
+        if (exists) {
+          setErrors({ email: "이미 가입된 이메일입니다." });
+          emailRef.current?.focus();
+          setLoading(false);
+          return;
+        }
 
-      const { error } = await apiCall(() =>
-        signUpWithEmail(email, password, name),
-      );
-      if (error) {
-        setErrors({ email: error });
-        emailRef.current?.focus();
-      } else {
-        setView("signupOtp");
+        const { error } = await apiCall(() =>
+          signUpWithEmail(email, password, name),
+        );
+        if (error) {
+          setErrors({ email: error });
+          emailRef.current?.focus();
+        } else {
+          setView("signupOtp");
+        }
+      } catch {
+        setErrors({ email: "네트워크 오류가 발생했습니다. 인터넷 연결을 확인해주세요." });
       }
       setLoading(false);
       return;
@@ -111,18 +116,22 @@ export function LoginScreen() {
 
     setErrors({});
     setLoading(true);
-    const { error } = await apiCall(() => signInWithEmail(email, password));
-    if (error) {
-      const { data: exists } = await supabase.rpc("check_email_exists", {
-        target_email: email,
-      });
-      if (!exists) {
-        setErrors({ email: "존재하지 않는 계정입니다." });
-        emailRef.current?.focus();
-      } else {
-        setErrors({ password: "비밀번호가 일치하지 않습니다." });
-        passwordRef.current?.focus();
+    try {
+      const { error } = await apiCall(() => signInWithEmail(email, password));
+      if (error) {
+        const { data: exists } = await supabase.rpc("check_email_exists", {
+          target_email: email,
+        });
+        if (!exists) {
+          setErrors({ email: "존재하지 않는 계정입니다." });
+          emailRef.current?.focus();
+        } else {
+          setErrors({ password: "비밀번호가 일치하지 않습니다." });
+          passwordRef.current?.focus();
+        }
       }
+    } catch {
+      setErrors({ email: "네트워크 오류가 발생했습니다. 인터넷 연결을 확인해주세요." });
     }
     setLoading(false);
   };
@@ -228,8 +237,10 @@ export function LoginScreen() {
               secureTextEntry
               onSubmitEditing={handleSubmit}
               error={errors.password}
-              containerStyle={{ marginBottom: 16 }}
+              containerStyle={{ marginBottom: 4 }}
             />
+
+            <PasswordStrength password={password} />
 
             <TextInput
               ref={passwordConfirmRef}

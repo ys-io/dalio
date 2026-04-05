@@ -34,26 +34,30 @@ export function ForgotPasswordScreen({ onBack }: Props) {
     setError("");
     setLoading(true);
 
-    const { data: exists } = await supabase.rpc("check_email_exists", {
-      target_email: email,
-    });
+    try {
+      const { data: exists } = await supabase.rpc("check_email_exists", {
+        target_email: email,
+      });
 
-    if (!exists) {
-      setError("존재하지 않는 계정입니다.");
-      emailRef.current?.focus();
-      setLoading(false);
-      return;
-    }
+      if (!exists) {
+        setError("존재하지 않는 계정입니다.");
+        emailRef.current?.focus();
+        setLoading(false);
+        return;
+      }
 
-    const { error: resetError } = await supabase.auth.resetPasswordForEmail(
-      email,
-    );
-    if (resetError) {
-      setError(resetError.message);
-      emailRef.current?.focus();
-    } else {
-      pauseAuthListener();
-      setStep("otp");
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(
+        email,
+      );
+      if (resetError) {
+        setError(resetError.message);
+        emailRef.current?.focus();
+      } else {
+        pauseAuthListener();
+        setStep("otp");
+      }
+    } catch {
+      setError("네트워크 오류가 발생했습니다. 인터넷 연결을 확인해주세요.");
     }
     setLoading(false);
   };
@@ -65,7 +69,7 @@ export function ForgotPasswordScreen({ onBack }: Props) {
         type="recovery"
         onVerified={() => setStep("reset")}
         onBack={async () => {
-          await signOut();
+          try { await signOut(); } catch {}
           resumeAuthListener();
           setStep("email");
         }}
@@ -77,7 +81,7 @@ export function ForgotPasswordScreen({ onBack }: Props) {
     return (
       <ResetPasswordScreen
         onComplete={async () => {
-          await signOut();
+          try { await signOut(); } catch {}
           resumeAuthListener();
           setStep("done");
         }}

@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { TextInput as RNTextInput, View, StyleSheet } from "react-native";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { TextInput as RNTextInput, View, StyleSheet, Platform } from "react-native";
 import { Button, Text, Screen, Body } from "@ys-io/ui";
 import { supabase } from "../lib/supabase";
 
@@ -10,30 +10,39 @@ interface Props {
   onBack: () => void;
 }
 
-const OTP_DURATION = 180; // 3분
+const OTP_DURATION = 180;
 
 export function OtpScreen({ email, type, onVerified, onBack }: Props) {
   const [code, setCode] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
   const [remaining, setRemaining] = useState(OTP_DURATION);
   const [expired, setExpired] = useState(false);
-  const inputRefs = useRef<(RNTextInput | null)[]>([]);
+  const inputRefs = useRef<(RNTextInput | null)[]>(Array(6).fill(null));
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  useEffect(() => {
-    setTimeout(() => inputRefs.current[0]?.focus(), 100);
+  const startTimer = useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setRemaining((prev) => {
+        if (prev <= 1) {
+          if (timerRef.current) clearInterval(timerRef.current);
+          setExpired(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
   }, []);
 
   useEffect(() => {
-    if (remaining <= 0) {
-      setExpired(true);
-      return;
-    }
-    const timer = setInterval(() => {
-      setRemaining((prev) => prev - 1);
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [remaining]);
+    setTimeout(() => inputRefs.current[0]?.focus(), 100);
+    startTimer();
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [startTimer]);
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
@@ -47,7 +56,6 @@ export function OtpScreen({ email, type, onVerified, onBack }: Props) {
     const newCode = [...code];
 
     if (value.length > 1) {
-      // 붙여넣기
       const digits = value.replace(/\D/g, "").slice(0, 6).split("");
       digits.forEach((d, i) => {
         if (i < 6) newCode[i] = d;
@@ -91,35 +99,46 @@ export function OtpScreen({ email, type, onVerified, onBack }: Props) {
     }
 
     setLoading(true);
-    const { error: verifyError } = await supabase.auth.verifyOtp({
-      email,
-      token,
-      type: type === "signup" ? "signup" : "recovery",
-    });
+    try {
+      const { error: verifyError } = await supabase.auth.verifyOtp({
+        email,
+        token,
+        type: type === "signup" ? "signup" : "recovery",
+      });
 
-    if (verifyError) {
-      setError("인증 코드가 올바르지 않습니다.");
-      setCode(["", "", "", "", "", ""]);
-      setTimeout(() => inputRefs.current[0]?.focus(), 100);
-    } else {
-      onVerified();
+      if (verifyError) {
+        setError("인증 코드가 올바르지 않습니다.");
+        setCode(["", "", "", "", "", ""]);
+        setTimeout(() => inputRefs.current[0]?.focus(), 100);
+      } else {
+        onVerified();
+      }
+    } catch {
+      setError("네트워크 오류가 발생했습니다. 인터넷 연결을 확인해주세요.");
     }
     setLoading(false);
   };
 
   const handleResend = async () => {
+    setResending(true);
     setError("");
-    setCode(["", "", "", "", "", ""]);
-    setExpired(false);
-    setRemaining(OTP_DURATION);
 
-    if (type === "signup") {
-      await supabase.auth.resend({ type: "signup", email });
-    } else {
-      await supabase.auth.resetPasswordForEmail(email);
+    try {
+      if (type === "signup") {
+        await supabase.auth.resend({ type: "signup", email });
+      } else {
+        await supabase.auth.resetPasswordForEmail(email);
+      }
+
+      setCode(["", "", "", "", "", ""]);
+      setExpired(false);
+      setRemaining(OTP_DURATION);
+      startTimer();
+      setTimeout(() => inputRefs.current[0]?.focus(), 100);
+    } catch {
+      setError("재전송에 실패했습니다. 인터넷 연결을 확인해주세요.");
     }
-
-    setTimeout(() => inputRefs.current[0]?.focus(), 100);
+    setResending(false);
   };
 
   return (
@@ -156,6 +175,7 @@ export function OtpScreen({ email, type, onVerified, onBack }: Props) {
                 styles.codeInput,
                 digit ? styles.codeInputFilled : null,
                 error ? styles.codeInputError : null,
+                Platform.OS === "web" ? ({ outlineStyle: "none" } as any) : {},
               ]}
               value={digit}
               onChangeText={(v) => handleChange(v, index)}
@@ -188,6 +208,8 @@ export function OtpScreen({ email, type, onVerified, onBack }: Props) {
             title="코드 재전송"
             onPress={handleResend}
             variant="primary"
+            loading={resending}
+            disabled={resending}
             style={{ marginBottom: 12 }}
           />
         ) : null}
@@ -196,7 +218,7 @@ export function OtpScreen({ email, type, onVerified, onBack }: Props) {
           title="돌아가기"
           onPress={onBack}
           variant="secondary"
-          disabled={loading}
+          disabled={loading || resending}
         />
       </Body>
     </Screen>
