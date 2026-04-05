@@ -1,0 +1,92 @@
+import { View } from "react-native";
+import { Text } from "@ys-io/ui";
+import { FocusablePressable } from "@components/common/FocusablePressable";
+import { COLORS } from "@constans/colors";
+import { styles } from "./TermsAgreement.styles";
+
+interface Props {
+  agreedTerms: boolean;
+  agreedPrivacy: boolean;
+  onToggleAll: () => void;
+  onToggleTerms: () => void;
+  onTogglePrivacy: () => void;
+  onViewTerms: () => void;
+  onViewPrivacy: () => void;
+  error?: string;
+}
+
+export function TermsAgreement({
+  agreedTerms,
+  agreedPrivacy,
+  onToggleAll,
+  onToggleTerms,
+  onTogglePrivacy,
+  onViewTerms,
+  onViewPrivacy,
+  error,
+}: Props) {
+  const allAgreed = agreedTerms && agreedPrivacy;
+
+  return (
+    <View style={styles.container}>
+      <FocusablePressable
+        style={styles.checkboxInline}
+        focusedStyle={styles.checkboxFocused}
+        onPress={onToggleAll}
+      >
+        <View style={[styles.checkbox, allAgreed && styles.checkboxChecked]}>
+          {allAgreed && <Text variant="caption" color="#fff">✓</Text>}
+        </View>
+        <Text variant="body" style={styles.allAgreeText}>전체 동의</Text>
+      </FocusablePressable>
+
+      <View style={styles.divider} />
+
+      <View style={styles.row}>
+        <FocusablePressable
+          style={styles.checkboxInline}
+          focusedStyle={styles.checkboxFocused}
+          onPress={onToggleTerms}
+        >
+          <View style={[styles.checkbox, agreedTerms && styles.checkboxChecked]}>
+            {agreedTerms && <Text variant="caption" color="#fff">✓</Text>}
+          </View>
+          <Text variant="caption">이용약관 동의 (필수)</Text>
+        </FocusablePressable>
+        <FocusablePressable
+          style={styles.linkButton}
+          focusedStyle={styles.linkFocused}
+          onPress={onViewTerms}
+        >
+          <Text variant="caption" color={COLORS.primary}>보기</Text>
+        </FocusablePressable>
+      </View>
+
+      <View style={styles.row}>
+        <FocusablePressable
+          style={styles.checkboxInline}
+          focusedStyle={styles.checkboxFocused}
+          onPress={onTogglePrivacy}
+        >
+          <View style={[styles.checkbox, agreedPrivacy && styles.checkboxChecked]}>
+            {agreedPrivacy && <Text variant="caption" color="#fff">✓</Text>}
+          </View>
+          <Text variant="caption">개인정보처리방침 동의 (필수)</Text>
+        </FocusablePressable>
+        <FocusablePressable
+          style={styles.linkButton}
+          focusedStyle={styles.linkFocused}
+          onPress={onViewPrivacy}
+        >
+          <Text variant="caption" color={COLORS.primary}>보기</Text>
+        </FocusablePressable>
+      </View>
+
+      {error ? (
+        <Text variant="caption" color={COLORS.error} style={styles.error}>
+          {error}
+        </Text>
+      ) : null}
+    </View>
+  );
+}
