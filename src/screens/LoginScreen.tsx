@@ -222,7 +222,7 @@ export function LoginScreen() {
         {isSignUp ? (
           <>
             <Button
-              title="뒤로가기"
+              title="로그인으로 돌아가기"
               onPress={() => {
                 setIsSignUp(false);
                 setErrors({});
