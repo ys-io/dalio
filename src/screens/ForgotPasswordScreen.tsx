@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TextInput as RNTextInput } from "react-native";
 import { apiCall } from "@ys-io/utils";
 import { supabase } from "../lib/supabase";
@@ -20,6 +20,10 @@ export function ForgotPasswordScreen({ onBack }: Props) {
   const [error, setError] = useState("");
   const [sent, setSent] = useState(false);
   const emailRef = useRef<RNTextInput>(null);
+
+  useEffect(() => {
+    setTimeout(() => emailRef.current?.focus(), 100);
+  }, []);
 
   const handleSubmit = async () => {
     if (!email) {
