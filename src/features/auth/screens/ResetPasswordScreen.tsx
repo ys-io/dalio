@@ -2,9 +2,9 @@ import { useRef } from "react";
 import { TextInput as RNTextInput } from "react-native";
 import { Button, TextInput, Text, Screen, Body } from "@ys-io/ui";
 import { validate } from "@ys-io/utils";
-import { supabase } from "../lib/supabase";
+import { supabase } from "../../../services/supabase";
 import { resetPasswordSchema } from "../lib/validations";
-import { useFormErrors } from "../hooks/useFormErrors";
+import { useFormErrors } from "../../../hooks/useFormErrors";
 import { PasswordStrength } from "../components/PasswordStrength";
 import { useState } from "react";
 

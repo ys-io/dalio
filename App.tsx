@@ -1,7 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import { AuthProvider, useAuth } from "./src/providers/AuthProvider";
-import { LoginScreen } from "./src/screens/LoginScreen";
-import { HomeScreen } from "./src/screens/HomeScreen";
+import { LoginScreen } from "./src/features/auth/screens/LoginScreen";
+import { HomeScreen } from "./src/features/home/screens/HomeScreen";
 import { LoadingScreen, ThemeProvider } from "@ys-io/ui";
 
 const darkTheme = {
