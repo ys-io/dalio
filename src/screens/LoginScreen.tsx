@@ -498,7 +498,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     gap: 12,
     borderRadius: 8,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: "transparent",
   },
   checkboxRowFocused: {
@@ -508,7 +508,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 12,
     borderRadius: 8,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: "transparent",
   },
   linkButtonFocused: {
