@@ -13,6 +13,7 @@ import {
   Body,
   Divider,
 } from "@ys-io/ui";
+import { ForgotPasswordScreen } from "./ForgotPasswordScreen";
 
 export function LoginScreen() {
   const { signInWithEmail, signUpWithEmail } = useAuth();
@@ -21,6 +22,7 @@ export function LoginScreen() {
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -108,6 +110,12 @@ export function LoginScreen() {
     setLoading(false);
   };
 
+  if (isForgotPassword) {
+    return (
+      <ForgotPasswordScreen onBack={() => setIsForgotPassword(false)} />
+    );
+  }
+
   return (
     <Screen>
       <Body centered scroll>
@@ -164,7 +172,6 @@ export function LoginScreen() {
                 clearError("password");
               }}
               secureTextEntry
-              showPasswordToggle
               onSubmitEditing={handleSubmit}
               error={errors.password}
               containerStyle={{ marginBottom: 16 }}
@@ -180,7 +187,6 @@ export function LoginScreen() {
                 clearError("passwordConfirm");
               }}
               secureTextEntry
-              showPasswordToggle
               onSubmitEditing={handleSubmit}
               error={errors.passwordConfirm}
               containerStyle={{ marginBottom: 32 }}
@@ -216,10 +222,17 @@ export function LoginScreen() {
                 clearError("password");
               }}
               secureTextEntry
-              showPasswordToggle
               onSubmitEditing={handleSubmit}
               error={errors.password}
-              containerStyle={{ marginBottom: 32 }}
+              containerStyle={{ marginBottom: 8 }}
+            />
+
+            <Button
+              title="비밀번호를 잊으셨나요?"
+              onPress={() => setIsForgotPassword(true)}
+              variant="ghost"
+              textStyle={{ fontSize: 13 }}
+              style={{ alignItems: "flex-end", marginBottom: 24 }}
             />
           </>
         )}
