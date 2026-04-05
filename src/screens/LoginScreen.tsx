@@ -265,6 +265,7 @@ export function LoginScreen() {
                 setErrors({});
                 setPassword("");
                 setPasswordConfirm("");
+                setTimeout(() => nameRef.current?.focus(), 100);
               }}
               variant="secondary"
               style={{ marginBottom: 16 }}
