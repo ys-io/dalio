@@ -3,7 +3,7 @@ import { Button, Text, Screen, Body } from "@ys-io/ui";
 import { supabase } from "../../../../services/supabase";
 import { useOtpTimer } from "../../../../hooks/auth/useOtpTimer";
 import { useOtpInput } from "../../../../hooks/auth/useOtpInput";
-import { COLORS } from "../../../../constans";
+import { COLORS } from "../../../../constans/colors";
 import { MSG } from "../../../../constans/messages";
 import { styles } from "./OtpScreen.styles";
 
