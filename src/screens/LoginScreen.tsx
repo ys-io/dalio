@@ -56,6 +56,10 @@ export function LoginScreen() {
         password,
         passwordConfirm,
       });
+      if (!agreedTerms || !agreedPrivacy) {
+        validationErrors.agree = "이용약관과 개인정보처리방침에 동의해주세요.";
+      }
+
       if (Object.keys(validationErrors).length > 0) {
         setErrors(validationErrors);
         if (validationErrors.name) nameRef.current?.focus();
@@ -63,11 +67,6 @@ export function LoginScreen() {
         else if (validationErrors.password) passwordRef.current?.focus();
         else if (validationErrors.passwordConfirm)
           passwordConfirmRef.current?.focus();
-        return;
-      }
-
-      if (!agreedTerms || !agreedPrivacy) {
-        setErrors({ agree: "이용약관과 개인정보처리방침에 동의해주세요." });
         return;
       }
 
