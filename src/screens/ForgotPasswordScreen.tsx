@@ -30,6 +30,18 @@ export function ForgotPasswordScreen({ onBack }: Props) {
 
     setError("");
     setLoading(true);
+
+    const { data: exists } = await supabase.rpc("check_email_exists", {
+      target_email: email,
+    });
+
+    if (!exists) {
+      setError("존재하지 않는 계정입니다.");
+      emailRef.current?.focus();
+      setLoading(false);
+      return;
+    }
+
     const { error: apiError } = await apiCall(() =>
       supabase.auth.resetPasswordForEmail(email),
     );
