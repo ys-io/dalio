@@ -226,6 +226,9 @@ export function LoginScreen() {
               onPress={() => {
                 setIsSignUp(false);
                 setErrors({});
+                setName("");
+                setPassword("");
+                setPasswordConfirm("");
               }}
               variant="secondary"
               style={{ marginBottom: 16 }}
@@ -260,6 +263,8 @@ export function LoginScreen() {
               onPress={() => {
                 setIsSignUp(true);
                 setErrors({});
+                setPassword("");
+                setPasswordConfirm("");
               }}
               variant="secondary"
               style={{ marginBottom: 16 }}
