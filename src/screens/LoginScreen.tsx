@@ -62,6 +62,18 @@ export function LoginScreen() {
 
       setErrors({});
       setLoading(true);
+
+      // 이미 가입된 이메일인지 체크
+      const { data: exists } = await supabase.rpc("check_email_exists", {
+        target_email: email,
+      });
+      if (exists) {
+        setErrors({ email: "이미 가입된 이메일입니다." });
+        emailRef.current?.focus();
+        setLoading(false);
+        return;
+      }
+
       const { error } = await apiCall(() =>
         signUpWithEmail(email, password, name),
       );
