@@ -1,20 +1,20 @@
 export const COLORS = {
-  // 브랜드
+  // brand
   primary: "#6366f1",
   success: "#22c55e",
   error: "#ff453a",
 
-  // 텍스트
+  // text
   white: "#ffffff",
   muted: "#636366",
   secondary: "#ababab",
   tertiary: "#8e8e93",
 
-  // 배경
+  // background
   background: "#000000",
   surface: "#1c1c1e",
   border: "#2c2c2e",
 
-  // 기타
+  // misc
   transparent: "transparent",
 } as const;

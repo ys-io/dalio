@@ -6,6 +6,7 @@ import { Button, TextInput, Text, Screen, Body } from "@ys-io/ui";
 import { useAutoFocus } from "@hooks/common/useAutoFocus";
 import { MSG } from "@constans/messages";
 import { FORGOT_PASSWORD_STEP, OTP_TYPE } from "@constans/views";
+import { RPC } from "@constans/rpc";
 import type { ForgotPasswordStep } from "@app-types/auth";
 import { OtpScreen } from "@features/auth/screens/otp/OtpScreen";
 import { ResetPasswordScreen } from "./ResetPasswordScreen";
@@ -36,7 +37,7 @@ export function ForgotPasswordScreen({ onBack }: Props) {
     setLoading(true);
 
     try {
-      const { data: exists } = await supabase.rpc("check_email_exists", {
+      const { data: exists } = await supabase.rpc(RPC.CHECK_EMAIL_EXISTS, {
         target_email: email,
       });
 

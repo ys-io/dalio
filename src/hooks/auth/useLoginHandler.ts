@@ -6,6 +6,7 @@ import { apiCall, validate } from "@ys-io/utils";
 import { supabase } from "@services/supabase";
 import { MSG } from "@constans/messages";
 import { LOGIN_VIEW } from "@constans/views";
+import { RPC } from "@constans/rpc";
 import type { LoginFormState, LoginFormRefs, LoginFormHandlers } from "@app-types/auth";
 
 export function useLoginHandler(
@@ -40,7 +41,7 @@ export function useLoginHandler(
     handlers.setLoading(true);
 
     try {
-      const { data: exists } = await supabase.rpc("check_email_registered", {
+      const { data: exists } = await supabase.rpc(RPC.CHECK_EMAIL_REGISTERED, {
         target_email: form.email,
       });
       if (exists) {
@@ -84,7 +85,7 @@ export function useLoginHandler(
         signInWithEmail(form.email, form.password),
       );
       if (error) {
-        const { data: exists } = await supabase.rpc("check_email_exists", {
+        const { data: exists } = await supabase.rpc(RPC.CHECK_EMAIL_EXISTS, {
           target_email: form.email,
         });
         if (!exists) {
