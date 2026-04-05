@@ -19,6 +19,7 @@ export function LoginScreen() {
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [signUpSuccess, setSignUpSuccess] = useState(false);
 
   const nameRef = useRef<RNTextInput>(null);
   const emailRef = useRef<RNTextInput>(null);
@@ -73,6 +74,15 @@ export function LoginScreen() {
       if (error) {
         setErrors({ email: error });
         emailRef.current?.focus();
+      } else {
+        // 가입 성공 → 자동 로그인 시도
+        const { error: loginError } = await apiCall(() =>
+          signInWithEmail(email, password),
+        );
+        if (loginError) {
+          // 이메일 확인이 필요한 경우
+          setSignUpSuccess(true);
+        }
       }
     } else {
       const { error } = await apiCall(() => signInWithEmail(email, password));
@@ -106,6 +116,37 @@ export function LoginScreen() {
 
   if (isForgotPassword) {
     return <ForgotPasswordScreen onBack={() => setIsForgotPassword(false)} />;
+  }
+
+  if (signUpSuccess) {
+    return (
+      <Screen>
+        <Body centered>
+          <Text variant="title" align="center" style={{ marginBottom: 16 }}>
+            가입이 완료되었습니다!
+          </Text>
+          <Text
+            variant="subtitle"
+            align="center"
+            style={{ marginBottom: 40, lineHeight: 24 }}
+          >
+            {email}으로 인증 메일을 보냈습니다.{"\n"}이메일을 확인해주세요.
+          </Text>
+          <Button
+            title="로그인으로 돌아가기"
+            onPress={() => {
+              setSignUpSuccess(false);
+              setIsSignUp(false);
+              setErrors({});
+              setPassword("");
+              setPasswordConfirm("");
+              setName("");
+            }}
+            variant="primary"
+          />
+        </Body>
+      </Screen>
+    );
   }
 
   return (
