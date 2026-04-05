@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { TextInput as RNTextInput } from "react-native";
+import { useAuth } from "../providers/AuthProvider";
 import { supabase } from "../lib/supabase";
 import { Button, TextInput, Text, Screen, Body } from "@ys-io/ui";
 import { OtpScreen } from "./OtpScreen";
@@ -12,6 +13,7 @@ interface Props {
 type Step = "email" | "otp" | "reset" | "done";
 
 export function ForgotPasswordScreen({ onBack }: Props) {
+  const { pauseAuthListener, resumeAuthListener, signOut } = useAuth();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -50,6 +52,7 @@ export function ForgotPasswordScreen({ onBack }: Props) {
       setError(resetError.message);
       emailRef.current?.focus();
     } else {
+      pauseAuthListener();
       setStep("otp");
     }
     setLoading(false);
@@ -61,7 +64,11 @@ export function ForgotPasswordScreen({ onBack }: Props) {
         email={email}
         type="recovery"
         onVerified={() => setStep("reset")}
-        onBack={() => setStep("email")}
+        onBack={async () => {
+          await signOut();
+          resumeAuthListener();
+          setStep("email");
+        }}
       />
     );
   }
@@ -69,7 +76,11 @@ export function ForgotPasswordScreen({ onBack }: Props) {
   if (step === "reset") {
     return (
       <ResetPasswordScreen
-        onComplete={() => setStep("done")}
+        onComplete={async () => {
+          await signOut();
+          resumeAuthListener();
+          setStep("done");
+        }}
       />
     );
   }

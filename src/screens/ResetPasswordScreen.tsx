@@ -4,7 +4,7 @@ import { Button, TextInput, Text, Screen, Body } from "@ys-io/ui";
 import { supabase } from "../lib/supabase";
 
 interface Props {
-  onComplete: () => void;
+  onComplete: () => void | Promise<void>;
 }
 
 export function ResetPasswordScreen({ onComplete }: Props) {

@@ -3,6 +3,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -26,6 +27,8 @@ interface AuthContextValue {
   signInWithEmail: (email: string, password: string) => Promise<void>;
   signUpWithEmail: (email: string, password: string, name: string) => Promise<void>;
   signOut: () => Promise<void>;
+  pauseAuthListener: () => void;
+  resumeAuthListener: () => void;
 }
 
 function mapUser(user: User): AuthUser {
@@ -49,11 +52,22 @@ const AuthContext = createContext<AuthContextValue>({
   signInWithEmail: noop,
   signUpWithEmail: noop,
   signOut: noop,
+  pauseAuthListener: () => {},
+  resumeAuthListener: () => {},
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const paused = useRef(false);
+
+  const pauseAuthListener = useCallback(() => {
+    paused.current = true;
+  }, []);
+
+  const resumeAuthListener = useCallback(() => {
+    paused.current = false;
+  }, []);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -63,7 +77,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (paused.current) return;
+      if (event === "PASSWORD_RECOVERY") return;
       setUser(session?.user ? mapUser(session.user) : null);
     });
 
@@ -107,6 +123,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signInWithEmail,
         signUpWithEmail,
         signOut,
+        pauseAuthListener,
+        resumeAuthListener,
       }}
     >
       {children}
